@@ -33,47 +33,38 @@
 MainWindow::MainWindow(){
 
 	this->contents=new QWidget(this);
-
-	/* Create the elements */
-	this->playbin = gst_element_factory_make ("playbin", "playbin");
-
-	if (!this->playbin) {
-		g_printerr ("Not all elements could be created.\n");
-	} else {
-	   /* Set the URI to play */
-		g_object_set (this->playbin, "uri", "file:///home/vvirkkal/Documents/video.h264", NULL);
-	}
-
-   this->setContents();
+	this->contents->setMinimumSize(200,200);
+	this->setContents();
 }
 
 void MainWindow::setContents(){
   
   this->setWindowTitle("Positives");
-  this->resize(600, 400);
-  
-  QVBoxLayout *videoLayout = new QVBoxLayout();
-  this->videoWidget = new QWidget(contents);
-  this->videoWidget->setMinimumSize(400,300);
-  this->videoWidget->setStyleSheet("background-color:black");
-  this->videoWidget->setAttribute(Qt::WA_NativeWindow, true);
-  gst_video_overlay_set_window_handle (GST_VIDEO_OVERLAY (this->playbin), this->videoWidget->winId());
-  videoLayout->addWidget(this->videoWidget);
+  this->resize(200, 200);
 
   QHBoxLayout *buttonLayout = new QHBoxLayout;
-  
   QPushButton *playButton = new QPushButton("play",contents);
   buttonLayout->addWidget(playButton);
   connect(playButton, SIGNAL(clicked()), this, SLOT(play()));
 
-  /* mainLayout */
-  videoLayout->addLayout(buttonLayout);
-  contents->setLayout(videoLayout);
+  contents->setLayout(buttonLayout);
   setCentralWidget(contents);
 }
 
 void MainWindow::play() {
-	gst_element_set_state (this->playbin, GST_STATE_PLAYING);
+
+	GstElement *pipeline = gst_element_factory_make ("playbin", "playbin");
+	if (!pipeline) {
+		g_printerr ("Not all elements could be created.\n");
+		return;
+	} else {
+		g_object_set (pipeline, "uri", "file:///home/vvirkkal/Documents/video.h264", NULL);
+	}
+
+	gstVideoWidget = new GstVideo::GstVideoWidget(600,400, NULL);
+	gstVideoWidget->show();
+	gstVideoWidget->setPipeline(pipeline);
+	gstVideoWidget->startPipeline();
 }
   
 

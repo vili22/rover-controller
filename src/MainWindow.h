@@ -33,6 +33,8 @@
 
 #include <string>
 
+#include "GstVideoWidget.h"
+
 class MainWindow : public QMainWindow{
 
 	Q_OBJECT
@@ -50,8 +52,7 @@ private:
 	void setContents();
 
 	QWidget *contents;
-	QWidget *videoWidget;
-	GstElement *playbin;
+	GstVideo::GstVideoWidget *gstVideoWidget;
 };
 
 #endif
