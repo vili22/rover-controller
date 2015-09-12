@@ -43,8 +43,6 @@ GstVideo::PipelineContainer* GstVideo::buildH264UdpPipe(int port, guintptr windo
 	std::cout << "win Id" << windowHandle <<" address " << &windowHandle<< "\n";
 	GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
 	gst_bus_set_sync_handler (bus, (GstBusSyncHandler) GstVideo::bus_sync_handler, (gpointer)windowHandle, NULL);
-	//globalHandle = windowHandle;
-	//gst_bus_set_sync_handler (bus, (GstBusSyncHandler) GstVideo::bus_sync_handler, NULL, NULL);
 
 	container->pipeline = pipeline;
 	container->udpsrc = udpsrc;
