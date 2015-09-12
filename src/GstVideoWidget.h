@@ -10,9 +10,12 @@
 
 #include <QApplication>
 #include <QWidget>
+#include <QCloseEvent>
 
 #include <gst/gst.h>
 #include <gst/video/videooverlay.h>
+
+#include "GstPipelineBuilder.h"
 
 namespace GstVideo {
 
@@ -21,16 +24,20 @@ namespace GstVideo {
 		Q_OBJECT
 
 		public:
-			GstVideoWidget(int w, int h, GstElement *pipeline);
-			void setPipeline(GstElement *pipeline);
+			GstVideoWidget(int w, int h, PipelineContainer *pipeline);
+			void setPipeline(PipelineContainer *pipeline);
 			void startPipeline();
+			WId getWinId();
+
+		protected:
+			void closeEvent(QCloseEvent *event);
 
 		private:
 			void createGstVideoWidget();
 			void addWidgetHandleToPipeline();
 
 			int width, height;
-			GstElement *pipeline;
+			PipelineContainer *pipeline;
 	};
 }
 #endif /* GSTVIDEOWIDGET_H_ */

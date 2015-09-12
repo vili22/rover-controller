@@ -34,6 +34,7 @@
 #include <string>
 
 #include "GstVideoWidget.h"
+#include "GstPipelineBuilder.h"
 
 class MainWindow : public QMainWindow{
 
@@ -42,6 +43,9 @@ class MainWindow : public QMainWindow{
 public:
 
 	MainWindow();
+protected:
+
+	void closeEvent(QCloseEvent *event);
 
 private slots:
 

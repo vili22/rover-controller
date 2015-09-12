@@ -23,7 +23,7 @@ message("CMAKE_LINKER_FLAGS: ${GSTREAMER_LIBRARY_FLAGS}")
 
 set(CMAKE_AUTOMOC TRUE)
 
-ADD_EXECUTABLE(rover-controller MainWindow.cpp GstVideoWidget.cpp)
+ADD_EXECUTABLE(rover-controller MainWindow.cpp GstVideoWidget.cpp GstPipelineBuilder.cpp)
 SET_TARGET_PROPERTIES(rover-controller PROPERTIES COMPILE_FLAGS "-O2 -fno-inline-functions -Wall -Wextra -Wno-unused-parameter -fPIE")
 SET_TARGET_PROPERTIES(rover-controller PROPERTIES COMPILE_FLAGS ${GSTREAMER_INCLUDE_FLAGS})
 TARGET_LINK_LIBRARIES(rover-controller ${Qt5Gui_LIBRARIES} ${Qt5Core_LIBRARIES}

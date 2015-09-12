@@ -7,7 +7,7 @@
 #include "GstVideoWidget.h"
 
 
-GstVideo::GstVideoWidget::GstVideoWidget(int w, int h, GstElement *pipeline) {
+GstVideo::GstVideoWidget::GstVideoWidget(int w, int h, PipelineContainer *pipeline) {
 
 	this->width = w;
 	this->height = h;
@@ -15,15 +15,20 @@ GstVideo::GstVideoWidget::GstVideoWidget(int w, int h, GstElement *pipeline) {
 	createGstVideoWidget();
 }
 
-void GstVideo::GstVideoWidget::setPipeline(GstElement *pipeline) {
+void GstVideo::GstVideoWidget::closeEvent(QCloseEvent *event) {
+
+	freePipeline(pipeline);
+	event->accept();
+}
+
+void GstVideo::GstVideoWidget::setPipeline(PipelineContainer *pipeline) {
 
 	this->pipeline = pipeline;
-	addWidgetHandleToPipeline();
 }
 
 void GstVideo::GstVideoWidget::startPipeline() {
 
-	gst_element_set_state (pipeline, GST_STATE_PLAYING);
+	gst_element_set_state (pipeline->pipeline, GST_STATE_PLAYING);
 
 }
 
@@ -34,12 +39,18 @@ void GstVideo::GstVideoWidget::createGstVideoWidget() {
 	setAttribute(Qt::WA_NativeWindow, true);
 }
 
+WId GstVideo::GstVideoWidget::getWinId() {
+
+	return winId();
+}
+
 void GstVideo::GstVideoWidget::addWidgetHandleToPipeline() {
 
 	if(pipeline != NULL) {
-		gst_video_overlay_set_window_handle (GST_VIDEO_OVERLAY(pipeline), winId());
+		gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(pipeline->autovideosink), winId());
 	}
 }
+
 
 
 

@@ -53,27 +53,32 @@ void MainWindow::setContents(){
 
 void MainWindow::play() {
 
-	GstElement *pipeline = gst_element_factory_make ("playbin", "playbin");
-	if (!pipeline) {
-		g_printerr ("Not all elements could be created.\n");
-		return;
-	} else {
-		g_object_set (pipeline, "uri", "file:///home/vvirkkal/Documents/video.h264", NULL);
-	}
-
 	gstVideoWidget = new GstVideo::GstVideoWidget(600,400, NULL);
 	gstVideoWidget->show();
+	std::cout << "window created winId " << gstVideoWidget->getWinId() << "\n";
+	GstVideo::PipelineContainer *pipeline = GstVideo::buildH264UdpPipe(5001, gstVideoWidget->getWinId());
+	if (!pipeline) {
+		g_printerr ("Udp pipeline could not be created");
+		return;
+	}
 	gstVideoWidget->setPipeline(pipeline);
+	std::cout << "pipeline created\n";
 	gstVideoWidget->startPipeline();
+	std::cout << "pipeline started\n";
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+
+	gst_deinit();
+	event->accept();
 }
   
 
 int main(int argc, char* argv[]) {
 
 	QApplication app(argc, argv);
-	gst_init (&argc, &argv);
 	MainWindow window;
+	gst_init (&argc, &argv);
 	window.show();
-
-  return app.exec();
+	return app.exec();
 }
