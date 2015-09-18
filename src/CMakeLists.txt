@@ -21,6 +21,7 @@ SET(CMAKE_AUTOMOC TRUE)
 
 SET(SOURCE ${PROJECT_SOURCE_DIR}/MainWindow.cpp)
 ADD_SUBDIRECTORY("${PROJECT_SOURCE_DIR}/gstvideo")
+ADD_SUBDIRECTORY("${PROJECT_SOURCE_DIR}/networking")
 
 ADD_EXECUTABLE(rover-controller ${SOURCE})
 SET_TARGET_PROPERTIES(rover-controller PROPERTIES COMPILE_FLAGS "-O2 -fno-inline-functions -Wall -Wextra -Wno-unused-parameter -fPIE")
