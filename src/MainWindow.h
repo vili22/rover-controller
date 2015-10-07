@@ -18,23 +18,24 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <memory>
+#include <string>
+#include <thread>
 
-#include <QApplication>
+
 #include <QWidget>
-#include <QStringList>
 #include <QMainWindow>
-#include <QListWidget>
-#include <QLabel>
-#include <QPaintEvent>
-#include <QMouseEvent>
+#include <QAction>
+#include <QMenuBar>
+#include <QMenu>
 
 #include <gst/gst.h>
 #include <gst/video/videooverlay.h>
 
-#include <string>
-
 #include "GstVideoWidget.h"
 #include "GstPipelineBuilder.h"
+#include "TcpReceiver.h"
+#include "TcpSocket.h"
 
 class MainWindow : public QMainWindow{
 
@@ -49,14 +50,26 @@ protected:
 
 private slots:
 
-	void play();
+	void connectToRover();
+	void startVideoStream();
 
 private:
 
 	void setContents();
 
 	QWidget *contents;
+	QMenuBar *menubar;
+	QMenu *menuSystem, *menuRover;
+	QAction *connectRover, *startStream, *exit;
+
+	std::shared_ptr<Networking::TcpSocket> socket;
+	std::shared_ptr<Networking::TcpReceiver> tcpReceiver;
+	const std::string serverIp;
+	const int port;
+	std::thread tcpThread;
+
 	GstVideo::GstVideoWidget *gstVideoWidget;
+
 };
 
 #endif

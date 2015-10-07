@@ -1,5 +1,5 @@
 /****************************************************************************
-* This file is part of Positive images
+* This file is part of RoverControl
 * Copyright (C) 2014 Ville Virkkala
 *
 * This program is free software: you can redistribute it and/or modify
@@ -30,32 +30,58 @@
 
 #include "MainWindow.h"
 
-MainWindow::MainWindow(){
+MainWindow::MainWindow() : serverIp("192.168.1.69"), port(5555) {
 
-	this->contents=new QWidget(this);
-	this->contents->setMinimumSize(200,200);
 	this->setContents();
 }
 
 void MainWindow::setContents(){
   
-  this->setWindowTitle("Positives");
-  this->resize(200, 200);
+	this->setWindowTitle("Rover Controller");
+	this->resize(400, 200);
 
-  QHBoxLayout *buttonLayout = new QHBoxLayout;
-  QPushButton *playButton = new QPushButton("play",contents);
-  buttonLayout->addWidget(playButton);
-  connect(playButton, SIGNAL(clicked()), this, SLOT(play()));
+	this->menubar = new QMenuBar(this);
+	this->menubar->setGeometry(QRect(0, 0, this->width(), 23));
+	this->setMenuBar(this->menubar);
 
-  contents->setLayout(buttonLayout);
-  setCentralWidget(contents);
+	this->connectRover = new QAction(tr("&connect"),this);
+    connect(this->connectRover,SIGNAL(triggered()),this,SLOT(connectToRover()));
+    this->startStream = new QAction(tr("&start stream"),this);
+    connect(this->startStream,SIGNAL(triggered()),this,SLOT(startVideoStream()));
+
+    this->menuSystem = menuBar()->addMenu(tr("&System"));
+    this->menuRover = this->menuBar()->addMenu(tr("&Rover"));
+    this->menuRover->addAction(this->connectRover);
+
+    this->contents=new QWidget(this);
+    this->contents->setMinimumSize(200,200);
+
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    QPushButton *playButton = new QPushButton("play",contents);
+    buttonLayout->addWidget(playButton);
+    connect(playButton, SIGNAL(clicked()), this, SLOT(startVideoStream()));
+
+    contents->setLayout(buttonLayout);
+    this->setCentralWidget(contents);
 }
 
-void MainWindow::play() {
+void MainWindow::connectToRover() {
+
+	try{
+		this->socket = std::make_shared<Networking::TcpSocket>(this->serverIp,this->port);
+	}catch(std::exception const& e) {
+		std::cout << e.what() << "\n";
+		return;
+	}
+
+	this->tcpReceiver = std::make_shared<Networking::TcpReceiver>(std::make_shared<Networking::BufferedSocketReader>(this->socket->getSocket()));
+	this->tcpThread = this->tcpReceiver->start();
+}
+
+void MainWindow::startVideoStream() {
 
 	gstVideoWidget = new GstVideo::GstVideoWidget(600,400, NULL);
 	gstVideoWidget->show();
-	std::cout << "window created winId " << gstVideoWidget->getWinId() << "\n";
 	GstVideo::PipelineContainer *pipeline = GstVideo::buildH264UdpPipe(5001, gstVideoWidget->getWinId());
 	if (!pipeline) {
 		g_printerr ("Udp pipeline could not be created");
