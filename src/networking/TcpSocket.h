@@ -17,6 +17,7 @@ namespace Networking {
 		TcpSocket(std::string ip, int port);
 		~TcpSocket();
 		int getSocket();
+		int writeLine(std::string message);
 
 	private:
 		void createConnection();

@@ -11,6 +11,7 @@
 #include <memory>
 #include <thread>
 
+#include "MessageHandler.h"
 #include "BufferedSocketReader.h"
 
 namespace Networking {
@@ -18,7 +19,7 @@ namespace Networking {
 	class TcpReceiver {
 
 	public:
-		TcpReceiver(std::shared_ptr<BufferedSocketReader> reader);
+		TcpReceiver(std::shared_ptr<BufferedSocketReader> reader, MessageHandler &mHandler);
 		void loop();
 		std::thread start();
 		void abort();
@@ -26,6 +27,7 @@ namespace Networking {
 	private:
 		bool running;
 		std::shared_ptr<BufferedSocketReader> reader;
+		MessageHandler &messageHandler;
 	};
 }
 

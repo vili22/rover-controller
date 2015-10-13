@@ -17,6 +17,7 @@ GstVideo::GstVideoWidget::GstVideoWidget(int w, int h, PipelineContainer *pipeli
 
 void GstVideo::GstVideoWidget::closeEvent(QCloseEvent *event) {
 
+	gst_element_set_state (pipeline->pipeline, GST_STATE_NULL);
 	freePipeline(pipeline);
 	event->accept();
 }

@@ -1,4 +1,4 @@
-Copyright (C) 2014 Ville Virkkala
+Copyright (C) 2015 Ville Virkkala
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published

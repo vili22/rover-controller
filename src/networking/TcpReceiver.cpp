@@ -8,9 +8,11 @@
 #include <mutex>
 #include <iostream>
 #include <stdexcept>
+
 #include "TcpReceiver.h"
 
-Networking::TcpReceiver::TcpReceiver(std::shared_ptr<Networking::BufferedSocketReader> br) : running(true), reader(br){
+Networking::TcpReceiver::TcpReceiver(std::shared_ptr<Networking::BufferedSocketReader> br, MessageHandler &mHandler) :
+running(true), reader(br), messageHandler(mHandler) {
 
 }
 
@@ -24,7 +26,10 @@ void Networking::TcpReceiver::loop() {
 		try {
 			std::string line = this->reader->readLine();
 			if(line.length() > 0) {
-				std::cout << line << "\n";
+				std::unique_lock<std::mutex> locker(this->messageHandler.getReceiverLock());
+				this->messageHandler.getMessageQueue().push(line);
+				this->messageHandler.setNotified(true);
+				this->messageHandler.getReceiverConditionVariable().notify_one();
 			}
 		}catch(const std::runtime_error &e) {
 			std::cout << e.what() << std::endl;
@@ -50,6 +55,7 @@ void Networking::TcpReceiver::abort() {
 	std::mutex mutex;
 
 	this->reader->abort();
+	this->messageHandler.getReceiverConditionVariable().notify_one();
 	mutex.lock();
 	this->running = false;
 	mutex.unlock();

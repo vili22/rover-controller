@@ -20,17 +20,14 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QBoxLayout>
-#include <QPainter>
-#include <QRect>
-#include <QDebug>
-#include <QTextStream>
+#include <QMessageBox>
 
 #include <iostream>
 #include <fstream>
 
 #include "MainWindow.h"
 
-MainWindow::MainWindow() : serverIp("192.168.1.69"), port(5555) {
+MainWindow::MainWindow() : serverIp("192.168.1.64"), port(5555), gstVideoWidget(NULL) {
 
 	this->setContents();
 }
@@ -49,19 +46,30 @@ void MainWindow::setContents(){
     this->startStream = new QAction(tr("&start stream"),this);
     connect(this->startStream,SIGNAL(triggered()),this,SLOT(startVideoStream()));
 
-    this->menuSystem = menuBar()->addMenu(tr("&System"));
+    this->menuSystem = this->menuBar()->addMenu(tr("&System"));
     this->menuRover = this->menuBar()->addMenu(tr("&Rover"));
     this->menuRover->addAction(this->connectRover);
+    this->menuRover->addAction(this->startStream);
+    this->startStream->setDisabled(true);
 
     this->contents=new QWidget(this);
     this->contents->setMinimumSize(200,200);
 
-    QHBoxLayout *buttonLayout = new QHBoxLayout;
-    QPushButton *playButton = new QPushButton("play",contents);
-    buttonLayout->addWidget(playButton);
-    connect(playButton, SIGNAL(clicked()), this, SLOT(startVideoStream()));
+    QVBoxLayout *mainLayout = new QVBoxLayout;
 
-    contents->setLayout(buttonLayout);
+    QWidget *controlWidget = new QWidget();
+    controlWidget->setMinimumSize(100,100);
+    QHBoxLayout *controlLayout = new QHBoxLayout();
+    controlLayout->setAlignment(Qt::AlignVCenter);
+    controlWidget->setLayout(controlLayout);
+
+    this->messageWindow = new QListWidget();
+    this->messageHandler.addMessageList(this->messageWindow);
+
+    mainLayout->addWidget(controlWidget);
+    mainLayout->addWidget(messageWindow);
+
+    contents->setLayout(mainLayout);
     this->setCentralWidget(contents);
 }
 
@@ -70,31 +78,63 @@ void MainWindow::connectToRover() {
 	try{
 		this->socket = std::make_shared<Networking::TcpSocket>(this->serverIp,this->port);
 	}catch(std::exception const& e) {
-		std::cout << e.what() << "\n";
+		QMessageBox msgBox;
+		std::string messageString = "Unable to connect to rover (" + std::string(e.what()) + ")";
+		msgBox.setText(messageString.c_str());
+		msgBox.exec();
 		return;
 	}
 
-	this->tcpReceiver = std::make_shared<Networking::TcpReceiver>(std::make_shared<Networking::BufferedSocketReader>(this->socket->getSocket()));
+	this->tcpReceiver = std::make_shared<Networking::TcpReceiver>(std::make_shared<Networking::BufferedSocketReader>(this->socket->getSocket()), this->messageHandler);
+	this->messageHandlerThread = this->messageHandler.start();
 	this->tcpThread = this->tcpReceiver->start();
+	this->connectRover->setDisabled(true);
+	this->startStream->setDisabled(false);
 }
 
 void MainWindow::startVideoStream() {
 
+
+	if(this->socket->writeLine("start\n") < 0 ) {
+		this->startStream->setDisabled(true);
+		this->connectRover->setDisabled(false);
+		this->closeTcpConnection();
+		QMessageBox msgBox;
+		std::string messageString = "Connection problem";
+		msgBox.setText(messageString.c_str());
+		msgBox.exec();
+		return;
+	}
 	gstVideoWidget = new GstVideo::GstVideoWidget(600,400, NULL);
 	gstVideoWidget->show();
 	GstVideo::PipelineContainer *pipeline = GstVideo::buildH264UdpPipe(5001, gstVideoWidget->getWinId());
 	if (!pipeline) {
-		g_printerr ("Udp pipeline could not be created");
+		QMessageBox msgBox;
+		std::string messageString = "Unable to create pipeline";
+		msgBox.setText(messageString.c_str());
+		msgBox.exec();
 		return;
 	}
 	gstVideoWidget->setPipeline(pipeline);
-	std::cout << "pipeline created\n";
 	gstVideoWidget->startPipeline();
-	std::cout << "pipeline started\n";
+	this->startStream->setDisabled(true);
 }
 
+
+void MainWindow::closeTcpConnection() {
+
+	this->socket->writeLine("abort\n");
+	this->tcpReceiver->abort();
+	this->messageHandler.abort();
+	this->tcpThread.join();
+	this->messageHandlerThread.join();
+}
 void MainWindow::closeEvent(QCloseEvent *event) {
 
+	this->closeTcpConnection();
+	if(this->gstVideoWidget) {
+		this->gstVideoWidget->close();
+	}
 	gst_deinit();
 	event->accept();
 }

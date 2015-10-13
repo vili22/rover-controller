@@ -58,4 +58,10 @@ int Networking::TcpSocket::getSocket() {
 	return this->sockfd;
 }
 
+int Networking::TcpSocket::writeLine(std::string message) {
+
+	return write(this->sockfd, message.c_str(), message.length());
+
+}
+
 
