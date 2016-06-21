@@ -27,7 +27,7 @@
 
 #include "MainWindow.h"
 
-MainWindow::MainWindow() : serverIp("192.168.1.64"), port(5555), gstVideoWidget(NULL) {
+MainWindow::MainWindow() : serverIp("192.168.1.69"), port(5550), gstVideoWidget(NULL) {
 
 	this->setContents();
 }
@@ -64,7 +64,6 @@ void MainWindow::setContents(){
     controlWidget->setLayout(controlLayout);
 
     this->messageWindow = new QListWidget();
-    this->messageHandler.addMessageList(this->messageWindow);
 
     mainLayout->addWidget(controlWidget);
     mainLayout->addWidget(messageWindow);

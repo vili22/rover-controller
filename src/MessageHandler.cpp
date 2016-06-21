@@ -51,7 +51,7 @@ void MessageHandler::receiverFunc() {
 
 		while(!this->receivedMessages.empty()) {
 
-			this->messageList->addItem(this->receivedMessages.front().c_str());
+			this->sensorProcessor.newSensorReading(this->receivedMessages.front().c_str());
 			this->receivedMessages.pop();
 		}
 
@@ -66,11 +66,6 @@ void MessageHandler::abort() {
 	mutex.lock();
 	this->running = false;
 	mutex.unlock();
-}
-
-void MessageHandler::addMessageList(QListWidget *mList) {
-
-	this->messageList = mList;
 }
 
 

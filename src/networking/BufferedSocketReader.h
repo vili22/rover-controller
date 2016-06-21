@@ -28,6 +28,7 @@ namespace Networking {
 			int socket, nLines;
 			bool reading;
 			std::vector<std::string> inputLines;
+			std::string prevMessagePart;
 
 	};
 }

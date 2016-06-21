@@ -15,6 +15,8 @@
 
 #include <QListWidget>
 
+#include "SensorProcessor.h"
+
 class MessageHandler {
 
 public:
@@ -22,7 +24,6 @@ public:
 	void receiverFunc();
 	std::thread start();
 	void abort();
-	void addMessageList(QListWidget *messageList);
 	void setNotified(bool);
 	std::queue<std::string>& getMessageQueue();
 	std::mutex& getReceiverLock();
@@ -34,7 +35,7 @@ private:
 	std::condition_variable receiverCondition;
 	std::queue<std::string> receivedMessages;
 	bool running, notified;
-	QListWidget *messageList;
+	SensorProcessor sensorProcessor;
 };
 
 

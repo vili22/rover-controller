@@ -19,6 +19,7 @@ Networking::BufferedSocketReader::BufferedSocketReader(int socket) {
 	this->socket = socket;
 	this->nLines = 0;
 	this->reading = true;
+	this->prevMessagePart = "";
 }
 
 Networking::BufferedSocketReader::~BufferedSocketReader() {
@@ -30,18 +31,17 @@ std::string Networking::BufferedSocketReader::readLine() {
 
 	if(this->nLines > 0) {
 		std::string line = *inputLines.begin();
-		std::cout << inputLines.size() << " " << this->nLines << "\n";
 		inputLines.erase(inputLines.begin());
 		this->nLines--;
 		return line;
 	}
 
-	int result, lenBuffer=255;
-	char buffer[lenBuffer];
+	int result, lenBuffer=16384;
+	char buffer[lenBuffer+1];
 	bool testReading = true;
 	std::mutex mutex;
 
-	memset(buffer, 0, lenBuffer);
+	memset(buffer, 0, lenBuffer + 1);
 
 	while(!parseInput(buffer)) {
 
@@ -102,9 +102,12 @@ int Networking::BufferedSocketReader::readInput(char *buffer, int lenBuffer) {
 bool Networking::BufferedSocketReader::parseInput(char *buffer) {
 
 	std::string newInput(buffer);
-	if(this->inputLines.size() > 0) {
-		newInput = newInput.append(*inputLines.begin());
+	if(newInput.compare("") == 0) {
+		return false;
 	}
+
+	newInput = this->prevMessagePart.append(newInput);
+	this->prevMessagePart = "";
 
 	return splitInput(newInput);
 }
@@ -113,7 +116,7 @@ bool Networking::BufferedSocketReader::splitInput(std::string input) {
 
 	bool found = false;
 	std::size_t prev = 0;
-	std::size_t next = input.find("\n");
+	std::size_t next = input.find('\n');
 	std::string line;
 
 	while(next != std::string::npos) {
@@ -122,9 +125,12 @@ bool Networking::BufferedSocketReader::splitInput(std::string input) {
 		line = input.substr(prev, next-prev);
 		inputLines.push_back(line);
 		prev = next+1;
-		next = input.find("\n", prev);
+		next = input.find('\n', prev);
 	}
 
+	if(prev < input.length()) {
+		this->prevMessagePart = input.substr(prev, input.length()-prev);
+	}
 	return found;
 }
 
