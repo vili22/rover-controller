@@ -5,14 +5,53 @@
  *      Author: vvirkkal
  */
 #include <iostream>
+#include "StringUtils.h"
 
 #include "SensorProcessor.h"
 
-SensorProcessor::SensorProcessor() {}
+SensorProcessor::SensorProcessor() : systemInitalized(false) {};
 
 void SensorProcessor::newSensorReading(std::string sensorReading) {
 
-	std::cout << sensorReading << "\n";
+	std::vector<std::string> input = utils::strSplit(sensorReading);
+
+	int sensor = std::stoi(input.at(0));
+
+	switch (sensor) {
+
+	case 0 :
+		accUpdate(input);
+		break;
+	case 1 :
+		gyroUpdate(input);
+		break;
+	default :
+		std::cout << "Unsupported sensor type\n";
+	}
+}
+
+void SensorProcessor::accUpdate(std::vector<std::string> input) {
+
+	if(!this->systemInitalized) {
+		double gravity[] = {0.0, 0.0, 1.0};
+		double acc[] = {std::stod(input.at(2)), std::stod(input.at(3)), std::stod(input.at(4))};
+		this->deviceOrientation = Quaternions::initFromVectors(Eigen::Vector3d(gravity), Eigen::Vector3d(acc));
+		this->prevTimeStamp = std::stod(input.at(1));
+	}
+}
+
+void SensorProcessor::gyroUpdate(std::vector<std::string> input) {
+
+	if(~this->systemInitalized) {
+		return;
+	}
+
+	double t = std::stod(input.at(1));
+	double dt = t - this->prevTimeStamp;
+	this->prevTimeStamp = t;
+	double gyro[] = {std::stod(input.at(2)), std::stod(input.at(3)), std::stod(input.at(4))};
+	this->deviceOrientation = Quaternions::gyroUpdate(this->deviceOrientation, gyro, dt);
+
 }
 
 

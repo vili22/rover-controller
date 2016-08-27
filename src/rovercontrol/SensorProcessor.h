@@ -9,6 +9,10 @@
 #define SENSORPROCESSOR_H_
 
 #include <string>
+#include <vector>
+#include <Eigen/Dense>
+
+#include "Quaternions.h"
 
 class SensorProcessor {
 
@@ -16,6 +20,15 @@ class SensorProcessor {
 
 		SensorProcessor();
 		void newSensorReading(std::string sensorReading);
+
+	private:
+		void accUpdate(std::vector<std::string> input);
+		void gyroUpdate(std::vector<std::string> input);
+
+		Eigen::Quaterniond deviceOrientation;
+		bool systemInitalized;
+		double prevTimeStamp;
+
 };
 
 
