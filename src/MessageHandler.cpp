@@ -51,7 +51,7 @@ void MessageHandler::receiverFunc() {
 
 		while(!this->receivedMessages.empty()) {
 
-			this->sensorProcessor.newSensorReading(this->receivedMessages.front().c_str());
+			this->sensorProcessor.newSensorReading(this->receivedMessages.front());
 			this->receivedMessages.pop();
 		}
 

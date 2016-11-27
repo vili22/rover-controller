@@ -27,7 +27,7 @@
 
 #include "MainWindow.h"
 
-MainWindow::MainWindow() : serverIp("192.168.1.69"), port(5550), gstVideoWidget(NULL) {
+MainWindow::MainWindow() : serverIp("192.168.1.69"), port(5550), connected(false), gstVideoWidget(NULL){
 
 	this->setContents();
 }
@@ -76,7 +76,9 @@ void MainWindow::connectToRover() {
 
 	try{
 		this->socket = std::make_shared<Networking::TcpSocket>(this->serverIp,this->port);
+		this->connected = true;
 	}catch(std::exception const& e) {
+		this->connected = false;
 		QMessageBox msgBox;
 		std::string messageString = "Unable to connect to rover (" + std::string(e.what()) + ")";
 		msgBox.setText(messageString.c_str());
@@ -122,7 +124,8 @@ void MainWindow::startVideoStream() {
 
 void MainWindow::closeTcpConnection() {
 
-	this->socket->writeLine("abort\n");
+	this->connected = false;
+	this->socket->writeLine("exit\n");
 	this->tcpReceiver->abort();
 	this->messageHandler.abort();
 	this->tcpThread.join();
@@ -137,8 +140,30 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 	gst_deinit();
 	event->accept();
 }
-  
 
+void MainWindow::keyPressEvent(QKeyEvent *event) {
+
+	if(!this->connected) {
+		return;
+	}
+	if(event->key() == Qt::Key_Up){
+		this->socket->writeLine("df");
+		event->accept();
+	}else if(event->key()==Qt::Key_Down){
+		this->socket->writeLine("db");
+		event->accept();
+	}else if(event->key()==Qt::Key_Left){
+		this->socket->writeLine("dl");
+		event->accept();
+	}else if(event->key() == Qt::Key_Right){
+		this->socket->writeLine("dr");
+		event->accept();
+	}else if(event->key() == Qt::Key_S){
+		this->socket->writeLine("ds");
+		event->accept();
+	}
+}
+  
 int main(int argc, char* argv[]) {
 
 	QApplication app(argc, argv);

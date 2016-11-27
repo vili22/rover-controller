@@ -9,25 +9,57 @@
 
 #include "SensorProcessor.h"
 
-SensorProcessor::SensorProcessor() : systemInitalized(false) {};
+SensorProcessor::SensorProcessor() : systemInitalized(false) {
+
+    writeToFile = false;
+};
+
+void SensorProcessor::closeSensorFile() {
+
+	if(sensorFile.is_open()) {
+		sensorFile.close();
+	}
+}
 
 void SensorProcessor::newSensorReading(std::string sensorReading) {
 
-	std::vector<std::string> input = utils::strSplit(sensorReading);
-
-	int sensor = std::stoi(input.at(0));
-
-	switch (sensor) {
-
-	case 0 :
-		accUpdate(input);
-		break;
-	case 1 :
-		gyroUpdate(input);
-		break;
-	default :
-		std::cout << "Unsupported sensor type\n";
+	if(sensorFile.is_open()) {
+		sensorFile << sensorReading << "\n";
 	}
+
+//	std::vector<std::string> input = utils::strSplit(sensorReading);
+//
+//	int sensor = std::stoi(input.at(0));
+//
+//	switch (sensor) {
+//
+//	case 0 :
+//		accUpdate(input);
+//		break;
+//	case 1 :
+//		gyroUpdate(input);
+//		break;
+//	default :
+//		std::cout << "Unsupported sensor type\n";
+//	}
+}
+
+void SensorProcessor::newSensorReading(std::vector<double> reading) {
+
+    if(reading.size() <= 0) {
+        return;
+    }
+
+    int type = (int)reading[0];
+
+    switch(type) {
+    case 0 :
+        if(wheelEncoder.checkInputValidity(reading)) {
+            this->wheelEncoder.update(reading);
+        }
+    }
+
+
 }
 
 void SensorProcessor::accUpdate(std::vector<std::string> input) {

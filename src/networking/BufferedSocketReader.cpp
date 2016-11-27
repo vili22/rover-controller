@@ -36,7 +36,7 @@ std::string Networking::BufferedSocketReader::readLine() {
 		return line;
 	}
 
-	int result, lenBuffer=16384;
+	int result, lenBuffer = 256;
 	char buffer[lenBuffer+1];
 	bool testReading = true;
 	std::mutex mutex;

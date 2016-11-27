@@ -14,7 +14,6 @@
 namespace utils {
 
 	std::vector<std::string> strSplit(std::string line);
-	int sum(int a, int b);
 }
 
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* This file is part of positive images
+* This file is part of rover-control
 * Copyright (C) 2014 Ville Virkkala
 *
 * This program is free software: you can redistribute it and/or modify
@@ -52,6 +52,7 @@ private slots:
 
 private:
 
+	void keyPressEvent(QKeyEvent *event);
 	void setContents();
 	void closeTcpConnection();
 
@@ -66,6 +67,7 @@ private:
 	const std::string serverIp;
 	const int port;
 	std::thread tcpThread;
+	bool connected;
 
 	GstVideo::GstVideoWidget *gstVideoWidget;
 

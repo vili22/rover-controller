@@ -1,6 +1,8 @@
 set(SOURCE
    ${SOURCE}
    ${CMAKE_CURRENT_SOURCE_DIR}/SensorProcessor.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/WheelEncoder.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/BasicSensor.cpp
    PARENT_SCOPE
 )
 

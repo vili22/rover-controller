@@ -10,9 +10,11 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
 #include <Eigen/Dense>
 
 #include "Quaternions.h"
+#include "WheelEncoder.h"
 
 class SensorProcessor {
 
@@ -20,14 +22,18 @@ class SensorProcessor {
 
 		SensorProcessor();
 		void newSensorReading(std::string sensorReading);
+		void newSensorReading(std::vector<double> sensorReading);
+		void closeSensorFile();
 
 	private:
 		void accUpdate(std::vector<std::string> input);
 		void gyroUpdate(std::vector<std::string> input);
 
 		Eigen::Quaterniond deviceOrientation;
-		bool systemInitalized;
+		bool systemInitalized, writeToFile;
 		double prevTimeStamp;
+		std::ofstream sensorFile;
+		WheelEncoder wheelEncoder;
 
 };
 

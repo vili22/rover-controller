@@ -15,6 +15,8 @@
 #include <unistd.h>
 #include <errno.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
+#include <netinet/tcp.h>
 
 #include "TcpSocket.h"
 
@@ -37,6 +39,15 @@ void Networking::TcpSocket::createConnection() {
 
 	if((this->sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		throw std::runtime_error("Unable to create socket");
+	}
+
+//	if(fcntl(this->sockfd, F_SETFL, fcntl(this->sockfd, F_GETFL) | O_NONBLOCK) < 0) {
+//		throw std::runtime_error("Unable to set non blocking");
+//	}
+
+	int val = 1;
+	if(setsockopt(this->sockfd, IPPROTO_TCP, TCP_NODELAY, &val, sizeof(val)) < 0) {
+		throw std::runtime_error("Failed to set no delay mode\n");
 	}
 
 	std::memset(&serv_addr, '0', sizeof(serv_addr));
