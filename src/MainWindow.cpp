@@ -33,7 +33,7 @@ MainWindow::MainWindow() : serverIp("192.168.1.69"), port(5550), connected(false
 }
 
 void MainWindow::setContents(){
-  
+
 	this->setWindowTitle("Rover Controller");
 	this->resize(400, 200);
 
@@ -41,16 +41,22 @@ void MainWindow::setContents(){
 	this->menubar->setGeometry(QRect(0, 0, this->width(), 23));
 	this->setMenuBar(this->menubar);
 
-	this->connectRover = new QAction(tr("&connect"),this);
+    this->menuSystem = this->menuBar()->addMenu(tr("&System"));
+
+    this->connectRover = new QAction(tr("&connect"),this);
     connect(this->connectRover,SIGNAL(triggered()),this,SLOT(connectToRover()));
     this->startStream = new QAction(tr("&start stream"),this);
     connect(this->startStream,SIGNAL(triggered()),this,SLOT(startVideoStream()));
-
-    this->menuSystem = this->menuBar()->addMenu(tr("&System"));
     this->menuRover = this->menuBar()->addMenu(tr("&Rover"));
     this->menuRover->addAction(this->connectRover);
     this->menuRover->addAction(this->startStream);
     this->startStream->setDisabled(true);
+
+
+    this->openConfiguration = new QAction(tr("&configuration"), this);
+    connect(this->openConfiguration, SIGNAL(triggered()), this, SLOT(openConfigurationDialog()));
+    this->menuSettings = this->menuBar()->addMenu(tr("&Settings"));
+    this->menuSettings->addAction(this->openConfiguration);
 
     this->contents=new QWidget(this);
     this->contents->setMinimumSize(200,200);
@@ -121,6 +127,11 @@ void MainWindow::startVideoStream() {
 	this->startStream->setDisabled(true);
 }
 
+void MainWindow::openConfigurationDialog() {
+
+    ConfigurationWidget *configurationWidget = new ConfigurationWidget(this);
+    configurationWidget->show();
+}
 
 void MainWindow::closeTcpConnection() {
 
@@ -133,7 +144,9 @@ void MainWindow::closeTcpConnection() {
 }
 void MainWindow::closeEvent(QCloseEvent *event) {
 
-	this->closeTcpConnection();
+    if(this->connected) {
+        this->closeTcpConnection();
+    }
 	if(this->gstVideoWidget) {
 		this->gstVideoWidget->close();
 	}
@@ -163,7 +176,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 		event->accept();
 	}
 }
-  
+
 int main(int argc, char* argv[]) {
 
 	QApplication app(argc, argv);

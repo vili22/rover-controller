@@ -34,6 +34,8 @@
 #include "TcpReceiver.h"
 #include "TcpSocket.h"
 
+#include "ConfigurationWidget.h"
+
 class MainWindow : public QMainWindow{
 
 	Q_OBJECT
@@ -50,6 +52,8 @@ private slots:
 	void connectToRover();
 	void startVideoStream();
 
+	void openConfigurationDialog();
+
 private:
 
 	void keyPressEvent(QKeyEvent *event);
@@ -58,8 +62,8 @@ private:
 
 	QWidget *contents;
 	QMenuBar *menubar;
-	QMenu *menuSystem, *menuRover;
-	QAction *connectRover, *startStream, *exit;
+	QMenu *menuSystem, *menuRover, *menuSettings;
+	QAction *connectRover, *startStream, *exit, *openConfiguration;
 	QListWidget *messageWindow;
 
 	std::shared_ptr<Networking::TcpSocket> socket;

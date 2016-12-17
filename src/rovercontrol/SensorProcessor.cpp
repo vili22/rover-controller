@@ -44,6 +44,10 @@ void SensorProcessor::newSensorReading(std::string sensorReading) {
 //	}
 }
 
+std::vector<double> SensorProcessor::getState() {
+    return wheelEncoder.getRoverPositionState();
+}
+
 void SensorProcessor::newSensorReading(std::vector<double> reading) {
 
     if(reading.size() <= 0) {

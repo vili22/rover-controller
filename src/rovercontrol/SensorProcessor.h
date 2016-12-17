@@ -24,6 +24,7 @@ class SensorProcessor {
 		void newSensorReading(std::string sensorReading);
 		void newSensorReading(std::vector<double> sensorReading);
 		void closeSensorFile();
+		std::vector<double> getState();
 
 	private:
 		void accUpdate(std::vector<std::string> input);

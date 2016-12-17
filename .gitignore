@@ -4,3 +4,5 @@ RemoteSystemsTempFiles
 *~
 *.o
 *.log
+articles
+sensor-data
