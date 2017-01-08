@@ -12,7 +12,9 @@ namespace configuration {
         public:
             Configuration();
             void setConfiguration(std::string key, ConfigurationEntry);
+            ConfigurationEntry getConfiguration(std::string key);
             std::string getConfigurationString(std::string key);
+            std::map<std::string, ConfigurationEntry> getConfigurationEntries();
             static void initializeConfiguration();
             static std::shared_ptr<Configuration> getInstance();
 

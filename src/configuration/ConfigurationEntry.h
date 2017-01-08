@@ -7,13 +7,16 @@ namespace configuration {
     class ConfigurationEntry {
         public:
             enum TYPE {STRING, BOOLEAN, INTEGER, FLOAT};
-            ConfigurationEntry(std::string name, TYPE type, std::string category);
+            ConfigurationEntry(std::string name, TYPE type, std::string category, std::string value);
             std::string getName();
             TYPE getType();
             std::string getCategory();
+            std::string getValue();
+            std::string setValue(std::string newValue);
 
         private:
             std::string name;
+            std::string value;
             TYPE type;
             std::string category;
     };

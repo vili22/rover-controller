@@ -26,10 +26,14 @@
 #include <fstream>
 
 #include "MainWindow.h"
+#include "Configuration.h"
+
+using namespace configuration;
 
 MainWindow::MainWindow() : serverIp("192.168.1.69"), port(5550), connected(false), gstVideoWidget(NULL){
 
 	this->setContents();
+	Configuration::initializeConfiguration();
 }
 
 void MainWindow::setContents(){
