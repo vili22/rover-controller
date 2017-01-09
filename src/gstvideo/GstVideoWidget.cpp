@@ -9,6 +9,7 @@
 
 GstVideo::GstVideoWidget::GstVideoWidget(int w, int h, PipelineContainer *pipeline) {
 
+    setAttribute(Qt::WA_DeleteOnClose);
 	this->width = w;
 	this->height = h;
 	this->pipeline = pipeline;

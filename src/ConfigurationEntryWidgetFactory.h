@@ -13,37 +13,46 @@ class ConfigurationEntryWidgetGenerator : public QWidget {
     public:
          ConfigurationEntryWidgetGenerator();
          virtual QWidget* generateConfigurationEntryWidget(configuration::ConfigurationEntry entry) = 0;
-         virtual std::string geConfigurationValue
+         virtual std::string getConfigurationValue() = 0;
 };
 
 class TextFieldEntryWidgetGenerator : public ConfigurationEntryWidgetGenerator {
 
     public:
-        TextFieldEntryWidgetGenerator(ConfigurationEntry entry);
+        TextFieldEntryWidgetGenerator(configuration::ConfigurationEntry entry);
+        TextFieldEntryWidgetGenerator();
         QWidget* generateConfigurationEntryWidget(configuration::ConfigurationEntry entry);
         std::string getConfigurationValue();
+
+    private:
+        QLineEdit *valueField;
 };
 
 class IntegerFieldEntryWidgetGenerator : public ConfigurationEntryWidgetGenerator {
 
     public:
-        IntegerFieldEntryWidgetGenerator(ConfigurationEntry entry);
+        IntegerFieldEntryWidgetGenerator(configuration::ConfigurationEntry entry);
+        IntegerFieldEntryWidgetGenerator();
         QWidget* generateConfigurationEntryWidget(configuration::ConfigurationEntry entry);
         std::string getConfigurationValue();
+        QLineEdit *valueField;
 };
 
 class FloatFieldEntryWidgetGenerator : public ConfigurationEntryWidgetGenerator {
 
     public:
-        FloatFieldEntryWidgetGenerator(ConfigurationEntry entry);
+        FloatFieldEntryWidgetGenerator(configuration::ConfigurationEntry entry);
+        FloatFieldEntryWidgetGenerator();
         QWidget* generateConfigurationEntryWidget(configuration::ConfigurationEntry entry);
         std::string getConfigurationValue();
+        QLineEdit *valueField;
 };
 
 class BooleanFieldEntryWidgetGenerator : ConfigurationEntryWidgetGenerator {
 
     public:
-        BooleanFieldEntryWidgetGenerator(ConfigurationEntry entry);
+        BooleanFieldEntryWidgetGenerator(configuration::ConfigurationEntry entry);
+        BooleanFieldEntryWidgetGenerator();
         QWidget* generateConfigurationEntryWidget(configuration::ConfigurationEntry entry);
         std::string getConfigurationValue();
 };

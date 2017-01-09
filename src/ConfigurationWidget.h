@@ -15,7 +15,7 @@ class ConfigurationWidget : public QWidget{
 
     Q_OBJECT
     public:
-        ConfigurationWidget(QWidget *parent);
+        ConfigurationWidget();
         virtual ~ConfigurationWidget();
 
     protected:

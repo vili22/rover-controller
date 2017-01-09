@@ -33,21 +33,13 @@ ConfigurationEntry Configuration::getConfiguration(string key) {
     map<string, ConfigurationEntry>::iterator it;
     it = configurationEntries.find(key);
 
-    if(it == configurationEntries.end()) {
-        return nullptr;
-    } else {
-        return it->second;
-    }
+    return it->second;
 }
 
 string Configuration::getConfigurationString(string key) {
 
     ConfigurationEntry entry = getConfiguration(key);
-    if(entry != nullptr) {
-        entry.getValue();
-    } else {
-        return nullptr;
-    }
+    return entry.getValue();
 }
 
  std::map<std::string, ConfigurationEntry> Configuration::getConfigurationEntries() {

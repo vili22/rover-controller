@@ -133,7 +133,7 @@ void MainWindow::startVideoStream() {
 
 void MainWindow::openConfigurationDialog() {
 
-    ConfigurationWidget *configurationWidget = new ConfigurationWidget(this);
+    ConfigurationWidget *configurationWidget = new ConfigurationWidget();
     configurationWidget->show();
 }
 

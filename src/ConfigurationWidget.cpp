@@ -14,8 +14,9 @@
 using namespace std;
 using namespace configuration;
 
-ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent, Qt::Window){
+ConfigurationWidget::ConfigurationWidget() : QWidget(){
 
+    setAttribute(Qt::WA_DeleteOnClose);
     initializeView();
 
 }
@@ -38,7 +39,7 @@ void ConfigurationWidget::initializeView() {
     int width = rec.width();
     setMinimumSize(0.65 * width, 0.65 * height);
 
-    listWidget = new QListWidget();
+    listWidget = new QListWidget(this);
     listWidget->setSelectionMode(QAbstractItemView::NoSelection);
     listWidget->setStyleSheet("QListWidget {background : gray; selection-color : gray; selection-background-color : gray}\
                               QListWidget::item {background : gray}");
@@ -78,17 +79,17 @@ void ConfigurationWidget::addConfigurations() {
 
         if(groupPanels.find(it->second.getCategory()) == groupPanels.end()) {
 
-                QWidget *panelTitel = new QWidget();
+                QWidget *panelTitel = new QWidget(this);
                 QHBoxLayout *titleLayout = new QHBoxLayout(panelTitel);
-                titleLayout->setContentsMargins(0,0,0,0);
+                titleLayout->setContentsMargins(3,8,0,8);
                 QLabel *newLabel = new QLabel(QString(it->second.getCategory().c_str()));
+                newLabel->setStyleSheet("QLabel { color : blue; }");
                 titleLayout->addWidget(newLabel);
                 titleLayout->addStretch(0);
 
                 QWidget *panelContainer = new QWidget(this);
                 QVBoxLayout *panelLayout = new QVBoxLayout(panelContainer);
                 panelLayout->setSpacing(0);
-                panelLayout->setContentsMargins(0,0,0,0);
 
                 panelLayout->addWidget(panelTitel);
                 panelContainer->setStyleSheet("WidgetItem:selected { background: gray}");
@@ -123,7 +124,9 @@ void ConfigurationWidget::saveConfiguration() {
     for(it = entryWidgets.begin(); it != entryWidgets.end(); it++) {
 
         ConfigurationEntry entry = Configuration::getInstance()->getConfiguration(it->first);
-        entry.setValue(it->second->getValue());
+        QWidget *entryWidget = it->second;
+        ConfigurationEntryWidgetGenerator *generator = static_cast<ConfigurationEntryWidgetGenerator*>(entryWidget);
+        entry.setValue(generator->getConfigurationValue());
     }
 }
 

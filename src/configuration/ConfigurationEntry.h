@@ -12,7 +12,7 @@ namespace configuration {
             TYPE getType();
             std::string getCategory();
             std::string getValue();
-            std::string setValue(std::string newValue);
+            void setValue(std::string newValue);
 
         private:
             std::string name;
