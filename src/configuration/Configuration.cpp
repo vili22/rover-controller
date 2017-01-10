@@ -57,6 +57,10 @@ void Configuration::initializeConfiguration() {
                                                                                     ConfigurationEntry::INTEGER,
                                                                                     "CONNECTION",
                                                                                     "5550"));
+    Configuration::getInstance()->setConfiguration("VIDEO_PORT", ConfigurationEntry("VIDEO_PORT",
+                                                                                    ConfigurationEntry::INTEGER,
+                                                                                    "CONNECTION",
+                                                                                    "5001"));
     Configuration::getInstance()->setConfiguration("WHEEL_DIAMETER", ConfigurationEntry("WHEEL_DIAMETER",
                                                                                     ConfigurationEntry::FLOAT,
                                                                                     "ROVER_DETAILS",
@@ -69,6 +73,10 @@ void Configuration::initializeConfiguration() {
                                                                                     ConfigurationEntry::INTEGER,
                                                                                     "ROVER_DETAILS",
                                                                                     "20"));
+    Configuration::getInstance()->setConfiguration("STORE_TO_FILE", ConfigurationEntry("STORE_TO_FILE",
+                                                                                    ConfigurationEntry::BOOLEAN,
+                                                                                    "SENSORS",
+                                                                                    "false"));
 }
 
 

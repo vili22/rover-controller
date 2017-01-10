@@ -5,6 +5,7 @@
 #include <memory>
 
 #include <QWidget>
+#include <QCheckBox>
 
 #include "ConfigurationEntry.h"
 
@@ -48,13 +49,14 @@ class FloatFieldEntryWidgetGenerator : public ConfigurationEntryWidgetGenerator 
         QLineEdit *valueField;
 };
 
-class BooleanFieldEntryWidgetGenerator : ConfigurationEntryWidgetGenerator {
+class BooleanFieldEntryWidgetGenerator : public ConfigurationEntryWidgetGenerator {
 
     public:
         BooleanFieldEntryWidgetGenerator(configuration::ConfigurationEntry entry);
         BooleanFieldEntryWidgetGenerator();
         QWidget* generateConfigurationEntryWidget(configuration::ConfigurationEntry entry);
         std::string getConfigurationValue();
+        QCheckBox *toggleField;
 };
 
 class ConfigurationEntryWidgetFactory {

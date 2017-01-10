@@ -1,3 +1,4 @@
+#include <sstream>
 #include <QLabel>
 #include <QLineEdit>
 #include <QHBoxLayout>
@@ -44,7 +45,7 @@ IntegerFieldEntryWidgetGenerator::IntegerFieldEntryWidgetGenerator(Configuration
 
     QLabel *newLabel = new QLabel(QString(entry.getName().c_str()));
 
-    this->valueField = new QLineEdit(QString(entry.getValue().c_str()));
+    valueField = new QLineEdit(QString(entry.getValue().c_str()));
     valueField->setAlignment(Qt::AlignRight);
     valueField->setFixedWidth(225);
     valueField->setValidator(new QIntValidator(5000, 6000));
@@ -76,7 +77,7 @@ FloatFieldEntryWidgetGenerator::FloatFieldEntryWidgetGenerator(ConfigurationEntr
 
     QLabel *newLabel = new QLabel(QString(entry.getName().c_str()));
 
-    this->valueField = new QLineEdit(QString(entry.getValue().c_str()));
+    valueField = new QLineEdit(QString(entry.getValue().c_str()));
     valueField->setAlignment(Qt::AlignRight);
     valueField->setFixedWidth(225);
     valueField->setValidator(new QDoubleValidator());
@@ -102,6 +103,44 @@ string FloatFieldEntryWidgetGenerator::getConfigurationValue() {
 
 }
 
+BooleanFieldEntryWidgetGenerator::BooleanFieldEntryWidgetGenerator(ConfigurationEntry entry) : ConfigurationEntryWidgetGenerator() {
+
+    QLabel *newLabel = new QLabel(QString(entry.getName().c_str()));
+    toggleField = new QCheckBox();
+
+    istringstream is(entry.getValue());
+    bool state;
+    is >> boolalpha >> state;
+
+    if(state) {
+        toggleField->setCheckState(Qt::Checked);
+    }
+    this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout->addWidget(newLabel);
+    layout->addStretch(0);
+    layout->addWidget(toggleField);
+    layout->setContentsMargins(0,2,0,2);
+}
+
+BooleanFieldEntryWidgetGenerator::BooleanFieldEntryWidgetGenerator() {}
+
+QWidget* BooleanFieldEntryWidgetGenerator::generateConfigurationEntryWidget(ConfigurationEntry entry) {
+
+    return new BooleanFieldEntryWidgetGenerator(entry);
+}
+
+string BooleanFieldEntryWidgetGenerator::getConfigurationValue() {
+
+    if(toggleField->checkState()) {
+        return "true";
+    } else {
+        return "false";
+    }
+
+}
+
+
 shared_ptr<ConfigurationEntryWidgetFactory> ConfigurationEntryWidgetFactory::configurationEntryWidgetFactory = nullptr;
 
 ConfigurationEntryWidgetFactory::ConfigurationEntryWidgetFactory() {
@@ -120,6 +159,11 @@ ConfigurationEntryWidgetFactory::ConfigurationEntryWidgetFactory() {
     entryWidgetGenerators.insert(pair<ConfigurationEntry::TYPE,
                                  shared_ptr<ConfigurationEntryWidgetGenerator>>(ConfigurationEntry::FLOAT,
                                                                                  static_pointer_cast<ConfigurationEntryWidgetGenerator>(floatGenerator)));
+
+    shared_ptr<BooleanFieldEntryWidgetGenerator> booleanGenerator = make_shared<BooleanFieldEntryWidgetGenerator>();
+    entryWidgetGenerators.insert(pair<ConfigurationEntry::TYPE,
+                                 shared_ptr<ConfigurationEntryWidgetGenerator>>(ConfigurationEntry::BOOLEAN,
+                                                                                 static_pointer_cast<ConfigurationEntryWidgetGenerator>(booleanGenerator)));
 }
 
 QWidget* ConfigurationEntryWidgetFactory::generateConfigurationEntryWidget(ConfigurationEntry entry) {
