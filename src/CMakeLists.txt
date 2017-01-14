@@ -39,7 +39,7 @@ ADD_SUBDIRECTORY("${PROJECT_SOURCE_DIR}/test")
 ADD_EXECUTABLE(rover-controller ${SOURCE})
 SET_TARGET_PROPERTIES(rover-controller PROPERTIES COMPILE_FLAGS "-std=c++11 -O2 -fno-inline-functions -Wall -Wextra -Wno-unused-parameter -fPIE")
 TARGET_LINK_LIBRARIES(rover-controller ${Qt5Gui_LIBRARIES} ${Qt5Core_LIBRARIES}
-${Qt5Widgets_LIBRARIES} ${GStreamer_LIBRARIES} pthread)
+${Qt5Widgets_LIBRARIES} ${GStreamer_LIBRARIES} pthread configuration)
 
 
 

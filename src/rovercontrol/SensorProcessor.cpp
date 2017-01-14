@@ -8,11 +8,27 @@
 #include "StringUtils.h"
 
 #include "SensorProcessor.h"
+#include "Configuration.h"
 
-SensorProcessor::SensorProcessor() : systemInitalized(false) {
+using namespace std;
+using namespace configuration;
 
-    writeToFile = false;
+shared_ptr<SensorProcessor> SensorProcessor::sensorProcessor = nullptr;
+
+SensorProcessor::SensorProcessor() : systemInitalized(false),
+                                     writeToFile(Configuration::getInstance()->getConfigurationBoolean("STORE_TO_FILE")) {
+
 };
+
+shared_ptr<SensorProcessor> SensorProcessor::getInstance() {
+
+    if(sensorProcessor == nullptr) {
+
+        sensorProcessor = make_shared<SensorProcessor>();
+    }
+
+    return sensorProcessor;
+}
 
 void SensorProcessor::closeSensorFile() {
 

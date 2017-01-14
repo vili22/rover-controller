@@ -28,9 +28,10 @@ public:
 	std::queue<std::string>& getMessageQueue();
 	std::mutex& getReceiverLock();
 	std::condition_variable& getReceiverConditionVariable();
-
+    static std::shared_ptr<MessageHandler> getInstance();
 private:
 
+    static std::shared_ptr<MessageHandler> messageHandler;
 	std::mutex receiverLock;
 	std::condition_variable receiverCondition;
 	std::queue<std::string> receivedMessages;

@@ -1,3 +1,6 @@
+#include <sstream>
+#include <iostream>
+
 #include "Configuration.h"
 
 using namespace std;
@@ -28,7 +31,7 @@ void Configuration::setConfiguration(string key, ConfigurationEntry configuratio
     }
 }
 
-ConfigurationEntry Configuration::getConfiguration(string key) {
+ConfigurationEntry& Configuration::getConfiguration(string key) {
 
     map<string, ConfigurationEntry>::iterator it;
     it = configurationEntries.find(key);
@@ -41,6 +44,29 @@ string Configuration::getConfigurationString(string key) {
     ConfigurationEntry entry = getConfiguration(key);
     return entry.getValue();
 }
+
+int Configuration::getConfigurationInteger(std::string key) {
+
+    ConfigurationEntry entry = getConfiguration(key);
+    return stoi(entry.getValue());
+}
+
+double Configuration::getConfigurationFloat(std::string key) {
+
+    ConfigurationEntry entry = getConfiguration(key);
+    return stod(entry.getValue());
+}
+
+bool Configuration::getConfigurationBoolean(std::string key) {
+
+    ConfigurationEntry entry = getConfiguration(key);
+    istringstream is(entry.getValue());
+    bool booleanValue;
+    is >> boolalpha >> booleanValue;
+    return booleanValue;
+}
+
+
 
  std::map<std::string, ConfigurationEntry> Configuration::getConfigurationEntries() {
 

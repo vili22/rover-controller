@@ -11,23 +11,24 @@
 #include <memory>
 #include <thread>
 
-#include "MessageHandler.h"
 #include "BufferedSocketReader.h"
 
-namespace Networking {
+namespace networking {
 
 	class TcpReceiver {
 
 	public:
-		TcpReceiver(std::shared_ptr<BufferedSocketReader> reader, MessageHandler &mHandler);
+        TcpReceiver();
 		void loop();
 		std::thread start();
 		void abort();
+		static std::shared_ptr<TcpReceiver> getInstance();
+		void setSocketReader(std::shared_ptr<networking::BufferedSocketReader> reader);
 
 	private:
+        static std::shared_ptr<TcpReceiver> tcpReceiver;
 		bool running;
 		std::shared_ptr<BufferedSocketReader> reader;
-		MessageHandler &messageHandler;
 	};
 }
 

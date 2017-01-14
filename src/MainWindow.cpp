@@ -27,10 +27,14 @@
 
 #include "MainWindow.h"
 #include "Configuration.h"
+#include "TcpReceiver.h"
+#include "MessageHandler.h"
 
+using namespace std;
 using namespace configuration;
+using namespace networking;
 
-MainWindow::MainWindow() : serverIp("192.168.1.69"), port(5550), connected(false), gstVideoWidget(NULL){
+MainWindow::MainWindow() : connected(false), gstVideoWidget(NULL){
 
 	this->setContents();
 	Configuration::initializeConfiguration();
@@ -85,7 +89,8 @@ void MainWindow::setContents(){
 void MainWindow::connectToRover() {
 
 	try{
-		this->socket = std::make_shared<Networking::TcpSocket>(this->serverIp,this->port);
+		this->socket = std::make_shared<networking::TcpSocket>(Configuration::getInstance()->getConfigurationString("HOST_IP_ADDRESS"),
+                                                         Configuration::getInstance()->getConfigurationInteger("HOST_PORT"));
 		this->connected = true;
 	}catch(std::exception const& e) {
 		this->connected = false;
@@ -96,9 +101,9 @@ void MainWindow::connectToRover() {
 		return;
 	}
 
-	this->tcpReceiver = std::make_shared<Networking::TcpReceiver>(std::make_shared<Networking::BufferedSocketReader>(this->socket->getSocket()), this->messageHandler);
-	this->messageHandlerThread = this->messageHandler.start();
-	this->tcpThread = this->tcpReceiver->start();
+	TcpReceiver::getInstance()->setSocketReader(std::make_shared<networking::BufferedSocketReader>(this->socket->getSocket()));
+	this->messageHandlerThread = MessageHandler::getInstance()->start();
+	this->tcpThread = TcpReceiver::getInstance()->start();
 	this->connectRover->setDisabled(true);
 	this->startStream->setDisabled(false);
 }
@@ -141,8 +146,8 @@ void MainWindow::closeTcpConnection() {
 
 	this->connected = false;
 	this->socket->writeLine("exit\n");
-	this->tcpReceiver->abort();
-	this->messageHandler.abort();
+	TcpReceiver::getInstance()->abort();
+	MessageHandler::getInstance()->abort();
 	this->tcpThread.join();
 	this->messageHandlerThread.join();
 }

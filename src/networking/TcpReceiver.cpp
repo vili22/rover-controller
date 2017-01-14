@@ -10,29 +10,45 @@
 #include <stdexcept>
 
 #include "TcpReceiver.h"
+#include "MessageHandler.h"
 
-Networking::TcpReceiver::TcpReceiver(std::shared_ptr<Networking::BufferedSocketReader> br, MessageHandler &mHandler) :
-running(true), reader(br), messageHandler(mHandler) {
+using namespace std;
+using namespace networking;
 
+shared_ptr<TcpReceiver> TcpReceiver::tcpReceiver = nullptr;
+
+TcpReceiver::TcpReceiver() : running(false) {}
+
+shared_ptr<TcpReceiver> TcpReceiver::getInstance() {
+
+    if(tcpReceiver == nullptr) {
+        tcpReceiver = make_shared<TcpReceiver>();
+    }
+    return tcpReceiver;
 }
 
-void Networking::TcpReceiver::loop() {
+void TcpReceiver::setSocketReader(shared_ptr<BufferedSocketReader> newReader) {
+    reader = newReader;
+}
 
-	std::mutex mutex;
+
+void networking::TcpReceiver::loop() {
+
+	mutex mutex;
 	bool testRunning = true;
 
 	while(testRunning) {
 
 		try {
-			std::string line = this->reader->readLine();
+			string line = this->reader->readLine();
 			if(line.length() > 0) {
-				std::unique_lock<std::mutex> locker(this->messageHandler.getReceiverLock());
-				this->messageHandler.getMessageQueue().push(line);
-				this->messageHandler.setNotified(true);
-				this->messageHandler.getReceiverConditionVariable().notify_one();
+				unique_lock<std::mutex> locker(MessageHandler::getInstance()->getReceiverLock());
+				MessageHandler::getInstance()->getMessageQueue().push(line);
+				MessageHandler::getInstance()->setNotified(true);
+				MessageHandler::getInstance()->getReceiverConditionVariable().notify_one();
 			}
-		}catch(const std::runtime_error &e) {
-			std::cout << e.what() << std::endl;
+		}catch(const runtime_error &e) {
+			cout << e.what() << endl;
 			return;
 		}
 		mutex.lock();
@@ -44,20 +60,21 @@ void Networking::TcpReceiver::loop() {
 	}
 }
 
-std::thread Networking::TcpReceiver::start() {
+thread networking::TcpReceiver::start() {
 
-	std::thread t(&Networking::TcpReceiver::loop, this);
+    running = true;
+	thread t(&networking::TcpReceiver::loop, this);
 	return t;
 }
 
-void Networking::TcpReceiver::abort() {
+void networking::TcpReceiver::abort() {
 
-	std::mutex mutex;
+	mutex mutex;
 
-	this->reader->abort();
-	this->messageHandler.getReceiverConditionVariable().notify_one();
+	reader->abort();
+	MessageHandler::getInstance()->getReceiverConditionVariable().notify_one();
 	mutex.lock();
-	this->running = false;
+	running = false;
 	mutex.unlock();
 }
 

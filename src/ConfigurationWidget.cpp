@@ -18,7 +18,6 @@ ConfigurationWidget::ConfigurationWidget() : QWidget(){
 
     setAttribute(Qt::WA_DeleteOnClose);
     initializeView();
-
 }
 
 ConfigurationWidget::~ConfigurationWidget() {
@@ -123,7 +122,7 @@ void ConfigurationWidget::saveConfiguration() {
 
     for(it = entryWidgets.begin(); it != entryWidgets.end(); it++) {
 
-        ConfigurationEntry entry = Configuration::getInstance()->getConfiguration(it->first);
+        ConfigurationEntry &entry = Configuration::getInstance()->getConfiguration(it->first);
         QWidget *entryWidget = it->second;
         ConfigurationEntryWidgetGenerator *generator = static_cast<ConfigurationEntryWidgetGenerator*>(entryWidget);
         entry.setValue(generator->getConfigurationValue());

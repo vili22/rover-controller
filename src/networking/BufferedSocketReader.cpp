@@ -14,7 +14,7 @@
 
 #include "BufferedSocketReader.h"
 
-Networking::BufferedSocketReader::BufferedSocketReader(int socket) {
+networking::BufferedSocketReader::BufferedSocketReader(int socket) {
 
 	this->socket = socket;
 	this->nLines = 0;
@@ -22,12 +22,12 @@ Networking::BufferedSocketReader::BufferedSocketReader(int socket) {
 	this->prevMessagePart = "";
 }
 
-Networking::BufferedSocketReader::~BufferedSocketReader() {
+networking::BufferedSocketReader::~BufferedSocketReader() {
 
 	close(this->socket);
 }
 
-std::string Networking::BufferedSocketReader::readLine() {
+std::string networking::BufferedSocketReader::readLine() {
 
 	if(this->nLines > 0) {
 		std::string line = *inputLines.begin();
@@ -65,7 +65,7 @@ std::string Networking::BufferedSocketReader::readLine() {
 	return line;
 }
 
-int Networking::BufferedSocketReader::readInput(char *buffer, int lenBuffer) {
+int networking::BufferedSocketReader::readInput(char *buffer, int lenBuffer) {
 
 	int result = 0;
 	struct timeval timeout;
@@ -99,7 +99,7 @@ int Networking::BufferedSocketReader::readInput(char *buffer, int lenBuffer) {
 	return result;
 }
 
-bool Networking::BufferedSocketReader::parseInput(char *buffer) {
+bool networking::BufferedSocketReader::parseInput(char *buffer) {
 
 	std::string newInput(buffer);
 	if(newInput.compare("") == 0) {
@@ -112,7 +112,7 @@ bool Networking::BufferedSocketReader::parseInput(char *buffer) {
 	return splitInput(newInput);
 }
 
-bool Networking::BufferedSocketReader::splitInput(std::string input) {
+bool networking::BufferedSocketReader::splitInput(std::string input) {
 
 	bool found = false;
 	std::size_t prev = 0;
@@ -134,7 +134,7 @@ bool Networking::BufferedSocketReader::splitInput(std::string input) {
 	return found;
 }
 
-void Networking::BufferedSocketReader::abort() {
+void networking::BufferedSocketReader::abort() {
 
 	std::mutex mutex;
 

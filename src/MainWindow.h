@@ -18,6 +18,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <memory>
+#include <thread>
+
 #include <QWidget>
 #include <QMainWindow>
 #include <QAction>
@@ -28,10 +31,8 @@
 #include <gst/gst.h>
 #include <gst/video/videooverlay.h>
 
-#include "MessageHandler.h"
 #include "GstVideoWidget.h"
 #include "GstPipelineBuilder.h"
-#include "TcpReceiver.h"
 #include "TcpSocket.h"
 
 #include "ConfigurationWidget.h"
@@ -66,16 +67,12 @@ private:
 	QAction *connectRover, *startStream, *exit, *openConfiguration;
 	QListWidget *messageWindow;
 
-	std::shared_ptr<Networking::TcpSocket> socket;
-	std::shared_ptr<Networking::TcpReceiver> tcpReceiver;
-	const std::string serverIp;
-	const int port;
+	std::shared_ptr<networking::TcpSocket> socket;
 	std::thread tcpThread;
 	bool connected;
 
 	GstVideo::GstVideoWidget *gstVideoWidget;
 
-	MessageHandler messageHandler;
 	std::thread messageHandlerThread;
 
 };

@@ -7,15 +7,29 @@
 #include <iostream>
 #include "MessageHandler.h"
 
-MessageHandler::MessageHandler() : running(true), notified(false) {}
+using namespace std;
+
+shared_ptr<MessageHandler> MessageHandler::messageHandler = nullptr;
+
+MessageHandler::MessageHandler() : running(false), notified(false) {}
+
+shared_ptr<MessageHandler> MessageHandler::getInstance() {
+
+    if(messageHandler == nullptr) {
+        messageHandler = make_shared<MessageHandler>();
+    }
+
+    return messageHandler;
+}
 
 std::thread MessageHandler::start() {
 
-	std::thread t(&MessageHandler::receiverFunc, this);
+    running = true;
+	thread t(&MessageHandler::receiverFunc, this);
 	return t;
 }
 
-std::queue<std::string>& MessageHandler::getMessageQueue() {
+queue<string>& MessageHandler::getMessageQueue() {
 
 	return this->receivedMessages;
 }

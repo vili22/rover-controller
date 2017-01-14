@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <memory>
+
 #include <Eigen/Dense>
 
 #include "Quaternions.h"
@@ -25,8 +27,11 @@ class SensorProcessor {
 		void newSensorReading(std::vector<double> sensorReading);
 		void closeSensorFile();
 		std::vector<double> getState();
+		static std::shared_ptr<SensorProcessor> getInstance();
 
 	private:
+
+	    static std::shared_ptr<SensorProcessor> sensorProcessor;
 		void accUpdate(std::vector<std::string> input);
 		void gyroUpdate(std::vector<std::string> input);
 

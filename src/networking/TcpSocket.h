@@ -10,7 +10,7 @@
 
 #include <string>
 
-namespace Networking {
+namespace networking {
 	class TcpSocket {
 
 	public:

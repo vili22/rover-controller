@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace Networking {
+namespace networking {
 
 	class BufferedSocketReader {
 

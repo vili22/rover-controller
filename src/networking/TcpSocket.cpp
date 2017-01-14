@@ -21,7 +21,7 @@
 #include "TcpSocket.h"
 
 
-Networking::TcpSocket::TcpSocket(std::string ipAddress, int port) {
+networking::TcpSocket::TcpSocket(std::string ipAddress, int port) {
 
 	this->sockfd = 0;
 	this->ip = ipAddress;
@@ -29,11 +29,11 @@ Networking::TcpSocket::TcpSocket(std::string ipAddress, int port) {
 	this->createConnection();
 }
 
-Networking::TcpSocket::~TcpSocket() {
+networking::TcpSocket::~TcpSocket() {
 
 }
 
-void Networking::TcpSocket::createConnection() {
+void networking::TcpSocket::createConnection() {
 
 	struct sockaddr_in serv_addr;
 
@@ -64,12 +64,12 @@ void Networking::TcpSocket::createConnection() {
 	}
 }
 
-int Networking::TcpSocket::getSocket() {
+int networking::TcpSocket::getSocket() {
 
 	return this->sockfd;
 }
 
-int Networking::TcpSocket::writeLine(std::string message) {
+int networking::TcpSocket::writeLine(std::string message) {
 
 	return write(this->sockfd, message.c_str(), message.length());
 
