@@ -36,7 +36,6 @@ private:
 	std::condition_variable receiverCondition;
 	std::queue<std::string> receivedMessages;
 	bool running, notified;
-	SensorProcessor sensorProcessor;
 };
 
 

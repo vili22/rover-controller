@@ -23,9 +23,12 @@ class SensorProcessor {
 	public:
 
 		SensorProcessor();
+        ~SensorProcessor();
 		void newSensorReading(std::string sensorReading);
 		void newSensorReading(std::vector<double> sensorReading);
+		void openSensorFile();
 		void closeSensorFile();
+		void setWriteToFile(bool writeToFile);
 		std::vector<double> getState();
 		static std::shared_ptr<SensorProcessor> getInstance();
 

@@ -20,6 +20,10 @@ SensorProcessor::SensorProcessor() : systemInitalized(false),
 
 };
 
+SensorProcessor::~SensorProcessor() {
+    closeSensorFile();
+}
+
 shared_ptr<SensorProcessor> SensorProcessor::getInstance() {
 
     if(sensorProcessor == nullptr) {
@@ -30,6 +34,14 @@ shared_ptr<SensorProcessor> SensorProcessor::getInstance() {
     return sensorProcessor;
 }
 
+void SensorProcessor::openSensorFile() {
+
+    string path = "../../sensor-data/";
+    string fileName = Configuration::getInstance()->getConfigurationString("FILE_STORAGE_NAME");
+    sensorFile.open(path + fileName);
+
+}
+
 void SensorProcessor::closeSensorFile() {
 
 	if(sensorFile.is_open()) {
@@ -37,11 +49,16 @@ void SensorProcessor::closeSensorFile() {
 	}
 }
 
-void SensorProcessor::newSensorReading(std::string sensorReading) {
+void SensorProcessor::newSensorReading(string sensorReading) {
 
-	if(sensorFile.is_open()) {
+	if(writeToFile && sensorFile.is_open()) {
 		sensorFile << sensorReading << "\n";
+		return;
 	}
+
+	cout << sensorReading << "\n";
+
+
 
 //	std::vector<std::string> input = utils::strSplit(sensorReading);
 //
@@ -104,6 +121,16 @@ void SensorProcessor::gyroUpdate(std::vector<std::string> input) {
 	double gyro[] = {std::stod(input.at(2)), std::stod(input.at(3)), std::stod(input.at(4))};
 	this->deviceOrientation = Quaternions::gyroUpdate(this->deviceOrientation, gyro, dt);
 
+}
+
+void SensorProcessor::setWriteToFile(bool writeToFileFlag) {
+
+    writeToFile = writeToFileFlag;
+    if(writeToFile) {
+
+        closeSensorFile();
+        openSensorFile();
+    }
 }
 
 

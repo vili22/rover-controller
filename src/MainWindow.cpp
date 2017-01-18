@@ -29,6 +29,7 @@
 #include "Configuration.h"
 #include "TcpReceiver.h"
 #include "MessageHandler.h"
+#include "SensorProcessor.h"
 
 using namespace std;
 using namespace configuration;
@@ -102,6 +103,7 @@ void MainWindow::connectToRover() {
 	}
 
 	TcpReceiver::getInstance()->setSocketReader(std::make_shared<networking::BufferedSocketReader>(this->socket->getSocket()));
+	SensorProcessor::getInstance()->setWriteToFile(Configuration::getInstance()->getConfigurationBoolean("STORE_TO_FILE"));
 	this->messageHandlerThread = MessageHandler::getInstance()->start();
 	this->tcpThread = TcpReceiver::getInstance()->start();
 	this->connectRover->setDisabled(true);
@@ -168,6 +170,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 	if(!this->connected) {
 		return;
 	}
+
 	if(event->key() == Qt::Key_Up){
 		this->socket->writeLine("df");
 		event->accept();

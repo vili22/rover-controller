@@ -65,7 +65,7 @@ void MessageHandler::receiverFunc() {
 
 		while(!this->receivedMessages.empty()) {
 
-			this->sensorProcessor.newSensorReading(this->receivedMessages.front());
+			SensorProcessor::getInstance()->newSensorReading(this->receivedMessages.front());
 			this->receivedMessages.pop();
 		}
 
@@ -81,6 +81,4 @@ void MessageHandler::abort() {
 	this->running = false;
 	mutex.unlock();
 }
-
-
 

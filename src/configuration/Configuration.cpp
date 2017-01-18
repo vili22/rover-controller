@@ -103,6 +103,10 @@ void Configuration::initializeConfiguration() {
                                                                                     ConfigurationEntry::BOOLEAN,
                                                                                     "SENSORS",
                                                                                     "false"));
+    Configuration::getInstance()->setConfiguration("FILE_STORAGE_NAME", ConfigurationEntry("FILE_STORAGE_NAME",
+                                                                                    ConfigurationEntry::STRING,
+                                                                                    "SENSORS",
+                                                                                    "data.txt"));
 }
 
 
