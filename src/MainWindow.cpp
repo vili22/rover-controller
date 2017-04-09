@@ -21,6 +21,8 @@
 #include <QGridLayout>
 #include <QBoxLayout>
 #include <QMessageBox>
+#include <QDesktopWidget>
+#include <QSurfaceFormat>
 
 #include <iostream>
 #include <fstream>
@@ -30,6 +32,7 @@
 #include "TcpReceiver.h"
 #include "MessageHandler.h"
 #include "SensorProcessor.h"
+#include "window.h"
 
 using namespace std;
 using namespace configuration;
@@ -67,6 +70,11 @@ void MainWindow::setContents(){
     this->menuSettings = this->menuBar()->addMenu(tr("&Settings"));
     this->menuSettings->addAction(this->openConfiguration);
 
+    this->mapView = new QAction(tr("&view map"), this);
+    connect(this->mapView, SIGNAL(triggered()), this, SLOT(openMapView()));
+    this->menuMap = this->menuBar()->addMenu(tr("&Map"));
+    this->menuMap->addAction(this->mapView);
+
     this->contents=new QWidget(this);
     this->contents->setMinimumSize(200,200);
 
@@ -85,6 +93,7 @@ void MainWindow::setContents(){
 
     contents->setLayout(mainLayout);
     this->setCentralWidget(contents);
+    this->setFocusPolicy(Qt::StrongFocus);
 }
 
 void MainWindow::connectToRover() {
@@ -144,6 +153,12 @@ void MainWindow::openConfigurationDialog() {
     configurationWidget->show();
 }
 
+void MainWindow::openMapView() {
+
+    Window *mapWindow = new Window();
+    mapWindow->show();
+}
+
 void MainWindow::closeTcpConnection() {
 
 	this->connected = false;
@@ -165,6 +180,17 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 	event->accept();
 }
 
+
+bool MainWindow::eventFilter(QObject *object, QEvent *e) {
+    std::cout << "here\n";
+    if (e->type() == QEvent::KeyPress){
+            QKeyEvent *keyevent = static_cast<QKeyEvent *>(e);
+            this->keyPressEvent(keyevent);
+            return true;
+    }else {
+        return QObject::eventFilter(object,e);
+    }
+}
 void MainWindow::keyPressEvent(QKeyEvent *event) {
 
 	if(!this->connected) {
@@ -185,6 +211,13 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 		event->accept();
 	}else if(event->key() == Qt::Key_S){
 		this->socket->writeLine("ds");
+		event->accept();
+	}else if(event->key() == Qt::Key_Escape){
+
+	    string speed_string = "";
+        speed_string += 's';
+        speed_string += 122;
+		this->socket->writeLine(speed_string.c_str());
 		event->accept();
 	}
 }

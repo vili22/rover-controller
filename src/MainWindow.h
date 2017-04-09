@@ -47,6 +47,8 @@ public:
 protected:
 
 	void closeEvent(QCloseEvent *event);
+    void keyPressEvent(QKeyEvent *event);
+    bool eventFilter(QObject *object, QEvent *e);
 
 private slots:
 
@@ -54,17 +56,17 @@ private slots:
 	void startVideoStream();
 
 	void openConfigurationDialog();
+	void openMapView();
 
 private:
 
-	void keyPressEvent(QKeyEvent *event);
 	void setContents();
 	void closeTcpConnection();
 
 	QWidget *contents;
 	QMenuBar *menubar;
-	QMenu *menuSystem, *menuRover, *menuSettings;
-	QAction *connectRover, *startStream, *exit, *openConfiguration;
+	QMenu *menuSystem, *menuRover, *menuSettings, *menuMap;
+	QAction *connectRover, *startStream, *exit, *openConfiguration, *mapView;
 	QListWidget *messageWindow;
 
 	std::shared_ptr<networking::TcpSocket> socket;

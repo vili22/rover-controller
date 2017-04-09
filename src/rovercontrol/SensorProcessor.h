@@ -31,6 +31,7 @@ class SensorProcessor {
 		void setWriteToFile(bool writeToFile);
 		std::vector<double> getState();
 		static std::shared_ptr<SensorProcessor> getInstance();
+		std::vector<int> getTicks();
 
 	private:
 

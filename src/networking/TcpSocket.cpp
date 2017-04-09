@@ -45,10 +45,10 @@ void networking::TcpSocket::createConnection() {
 //		throw std::runtime_error("Unable to set non blocking");
 //	}
 
-	int val = 1;
-	if(setsockopt(this->sockfd, IPPROTO_TCP, TCP_NODELAY, &val, sizeof(val)) < 0) {
-		throw std::runtime_error("Failed to set no delay mode\n");
-	}
+//	int val = 1;
+//	if(setsockopt(this->sockfd, IPPROTO_TCP, TCP_NODELAY, &val, sizeof(val)) < 0) {
+//		throw std::runtime_error("Failed to set no delay mode\n");
+//	}
 
 	std::memset(&serv_addr, '0', sizeof(serv_addr));
 

@@ -90,15 +90,19 @@ void Configuration::initializeConfiguration() {
     Configuration::getInstance()->setConfiguration("WHEEL_DIAMETER", ConfigurationEntry("WHEEL_DIAMETER",
                                                                                     ConfigurationEntry::FLOAT,
                                                                                     "ROVER_DETAILS",
-                                                                                    "0.064"));
+                                                                                    "0.032"));
     Configuration::getInstance()->setConfiguration("BASE_LENGTH", ConfigurationEntry("BASE_LENGTH",
                                                                                     ConfigurationEntry::FLOAT,
                                                                                     "ROVER_DETAILS",
                                                                                     "0.145"));
     Configuration::getInstance()->setConfiguration("ENCODER_RESOLUTION", ConfigurationEntry("ENCODER_RESOLUTION",
-                                                                                    ConfigurationEntry::INTEGER,
+                                                                                    ConfigurationEntry::FLOAT,
                                                                                     "ROVER_DETAILS",
                                                                                     "20"));
+    Configuration::getInstance()->setConfiguration("ENCODER_UPDATE_INTERVAL", ConfigurationEntry("ENCODER_UPDATE_INTERVAL",
+                                                                                    ConfigurationEntry::FLOAT,
+                                                                                    "ROVER_DETAILS",
+                                                                                    "0.1"));
     Configuration::getInstance()->setConfiguration("STORE_TO_FILE", ConfigurationEntry("STORE_TO_FILE",
                                                                                     ConfigurationEntry::BOOLEAN,
                                                                                     "SENSORS",

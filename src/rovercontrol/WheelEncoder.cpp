@@ -1,26 +1,35 @@
 #include <cmath>
-
+#include <iostream>
 #include "WheelEncoder.h"
+#include "Configuration.h"
+
+using namespace std;
+using namespace configuration;
 
 WheelEncoder::WheelEncoder() {
 
     this->initialized = false;
     this->leftWheelUpdated = false;
     this->rightWheelUpdated = false;
+    this->left_ticks = 0;
+    this->right_ticks = 0;
     this->x = 0;
     this->y = 0;
     this->theta = 0;
-    this->t = 0;
+    this->t = -1;
     this->v = 0;
     this->omega = 0;
     this->lt = -1;
     this->rt = -1;
     this->lv = 0;
     this->rv = 0;
-    this->Rw = 0.064;
-    this->Lb = 0.145;
-    this->er = 20;
-    this->ar = M_PI/this->er;
+    this->Rw = Configuration::getInstance()->getConfigurationFloat("WHEEL_DIAMETER");
+    this->Lb = Configuration::getInstance()->getConfigurationFloat("BASE_LENGTH");
+    this->er = Configuration::getInstance()->getConfigurationFloat("ENCODER_RESOLUTION");
+    this->ar = 2 * M_PI/this->er;
+    this->updateInterval = Configuration::getInstance()->getConfigurationFloat("ENCODER_UPDATE_INTERVAL");
+    this->l_tot = 0;
+    this->r_tot = 0;
 
 }
 
@@ -31,24 +40,35 @@ bool WheelEncoder::checkInputValidity(std::vector<double> reading) {
 
 void WheelEncoder::update(std::vector<double> reading) {
 
-    if((int) reading[2] == 0) {
-        if(lt < 0) {
-            lt = reading[1];
-            return;
-        }
-        updateLeftWheel(reading);
-    } else {
-        if(rt < 0) {
-            rt = reading[1];
-            return;
-        }
-        updateRightWheel(reading);
+    if(t < 0) {
+        t = reading[1];
+        return;
     }
 
-    if(leftWheelUpdated && rightWheelUpdated) {
+    if((int) reading[2] == 0) {
+        if(reading[1] - lt  > 0.015) {
+            lt = reading[1];
+            left_ticks += ((int) reading[3] == 1 ? 1 : -1);
+            l_tot++;
+        } else {
+            return;
+        }
+    } else {
+        if(reading[1] - rt  > 0.015) {
+            rt = reading[1];
+            right_ticks += ((int) reading[3] == 1 ? 1 : -1);
+            r_tot++;
+        } else {
+            return;
+        }
+    }
+
+
+
+    if(reading[1] - t > updateInterval) {
+        updateLeftWheel(reading[1]);
+        updateRightWheel(reading[1]);
         updateRoverPositionState(reading[1]);
-        leftWheelUpdated = false;
-        rightWheelUpdated = false;
     }
 }
 
@@ -62,32 +82,39 @@ std::vector<double> WheelEncoder::getRoverPositionState() {
     return state;
 }
 
-void WheelEncoder::updateLeftWheel(std::vector<double> reading) {
+std::vector<int> WheelEncoder::getTotalTicks() {
 
-    lv = ar/(reading[1] - lt) * ((int) reading[3] == 1 ? 1 : -1) * Rw;
-    lt = reading[1];
-    leftWheelUpdated = true;
+    vector<int> ticks;
+    ticks.push_back(l_tot);
+    ticks.push_back(r_tot);
+
+    return ticks;
 }
 
-void WheelEncoder::updateRightWheel(std::vector<double> reading) {
+void WheelEncoder::updateLeftWheel(double t_cur) {
 
-    rv = ar/(reading[1] - rt) * ((int) reading[3] == 1 ? 1 : -1) * Rw;
-    rt = reading[1];
-    rightWheelUpdated = true;
+    lv = ar/(t_cur - t) * left_ticks *  Rw;
+    left_ticks = 0;
+}
+
+void WheelEncoder::updateRightWheel(double t_cur) {
+
+    rv = ar/(t_cur - t) * right_ticks * Rw;
+    right_ticks = 0;
 }
 
 void WheelEncoder::updateRoverPositionState(double t_cur) {
 
-    double v_cur = (lv + rv)/2;
-    double omega_cur = (rv-lv)/Lb;
-
-    if(!initialized) {
-        v = v_cur;
-        omega = omega_cur;
-        t = t_cur;
-        initialized = true;
-        return;
-    }
+    v = (lv + rv)/2;
+    omega = (rv-lv)/Lb;
+  //  std::cout << "left speed :" << lv << " right speed: " << rv << "speed: " << v << " omega: " << omega << "\n";
+//    if(!initialized) {
+//        v = v_cur;
+//        omega = omega_cur;
+//        t = t_cur;
+//        initialized = true;
+//        return;
+//    }
 
     double dt = t_cur - t;
     std::vector<double> rk4Vector = rk4Update(dt);

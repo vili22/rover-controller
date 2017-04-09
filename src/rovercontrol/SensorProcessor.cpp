@@ -81,6 +81,10 @@ std::vector<double> SensorProcessor::getState() {
     return wheelEncoder.getRoverPositionState();
 }
 
+vector<int> SensorProcessor::getTicks() {
+    return wheelEncoder.getTotalTicks();
+}
+
 void SensorProcessor::newSensorReading(std::vector<double> reading) {
 
     if(reading.size() <= 0) {
