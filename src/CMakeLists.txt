@@ -8,6 +8,7 @@ FIND_PACKAGE(Qt5Gui REQUIRED)
 FIND_PACKAGE(Qt5Core REQUIRED)
 FIND_PACKAGE(Qt5Widgets REQUIRED)
 FIND_PACKAGE(GStreamer REQUIRED)
+FIND_PACKAGE(OpenGL REQUIRED)
 
 INCLUDE_DIRECTORIES(${Qt5Gui_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${Qt5Core_INCLUDE_DIRS})
@@ -42,7 +43,7 @@ ADD_SUBDIRECTORY("${PROJECT_SOURCE_DIR}/test")
 ADD_EXECUTABLE(rover-controller ${SOURCE})
 SET_TARGET_PROPERTIES(rover-controller PROPERTIES COMPILE_FLAGS "-std=c++11 -O2 -fno-inline-functions -Wall -Wextra -Wno-unused-parameter -fPIE")
 TARGET_LINK_LIBRARIES(rover-controller ${Qt5Gui_LIBRARIES} ${Qt5Core_LIBRARIES}
-${Qt5Widgets_LIBRARIES} ${GStreamer_LIBRARIES} pthread configuration map)
+${Qt5Widgets_LIBRARIES} ${GStreamer_LIBRARIES} ${OPENGL_LIBRARY} GLEW pthread configuration map)
 
 
 
