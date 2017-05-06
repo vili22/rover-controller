@@ -1,5 +1,5 @@
-#include "glwidget.h"
-#include "window.h"
+#include <MapContent.h>
+#include <MapVisualizer.h>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QKeyEvent>
@@ -9,12 +9,12 @@
 
 #include <iostream>
 
-Window::Window()
-{
+using namespace std;
+
+MapVisualizer::MapVisualizer(function<void()> f) :
+		closeAction(f) {
     setAttribute(Qt::WA_DeleteOnClose);
-    glWidget = new GLWidget;
-
-
+    glWidget = new MapContent;
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     QHBoxLayout *container = new QHBoxLayout;
@@ -29,8 +29,7 @@ Window::Window()
 }
 
 
-void Window::keyPressEvent(QKeyEvent *e)
-{
+void MapVisualizer::keyPressEvent(QKeyEvent *e) {
     if (e->key() == Qt::Key_Escape) {
         close();
     } else if (e->key() == Qt::Key_Up) {
@@ -44,4 +43,9 @@ void Window::keyPressEvent(QKeyEvent *e)
     } else {
         QWidget::keyPressEvent(e);
     }
+}
+
+void MapVisualizer::closeEvent(QCloseEvent *event) {
+	closeAction();
+	event->accept();
 }

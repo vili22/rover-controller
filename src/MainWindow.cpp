@@ -32,7 +32,7 @@
 #include "TcpReceiver.h"
 #include "MessageHandler.h"
 #include "SensorProcessor.h"
-#include "window.h"
+#include "Mapper.h"
 
 using namespace std;
 using namespace configuration;
@@ -99,7 +99,10 @@ void MainWindow::setContents(){
 void MainWindow::connectToRover() {
 
 	try{
-		this->socket = std::make_shared<networking::TcpSocket>(Configuration::getInstance()->getConfigurationString("HOST_IP_ADDRESS"),
+		this->socket =
+				make_shared < networking::TcpSocket
+						> (Configuration::getInstance()->getConfigurationString(
+								"HOST_IP_ADDRESS"),
                                                          Configuration::getInstance()->getConfigurationInteger("HOST_PORT"));
 		this->connected = true;
 	}catch(std::exception const& e) {
@@ -155,8 +158,7 @@ void MainWindow::openConfigurationDialog() {
 
 void MainWindow::openMapView() {
 
-    Window *mapWindow = new Window();
-    mapWindow->show();
+	Mapper::getInstance()->viewMap();
 }
 
 void MainWindow::closeTcpConnection() {

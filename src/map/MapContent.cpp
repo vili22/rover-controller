@@ -1,23 +1,23 @@
 #include <GL/glew.h>
-#include "glwidget.h"
 #include <QMouseEvent>
 #include <QOpenGLShaderProgram>
 #include <QCoreApplication>
 #include <math.h>
+#include <MapContent.h>
 #include <iostream>
 #include "shader.hpp"
 
 #define GLM_FORCE_RADIANS
 using namespace glm;
 
-GLWidget::GLWidget(QWidget *parent)
+MapContent::MapContent(QWidget *parent)
     : QOpenGLWidget(parent), horizontalAngle(3.14f), verticalAngle(0.0f),
 	  mouseSpeed(0.005f), cameraPosition(5,2,10), prevPoint(-1, -1) {
 
 	setMouseTracking(true);
 }
 
-GLWidget::~GLWidget() {
+MapContent::~MapContent() {
     cleanup();
 }
 
@@ -74,17 +74,17 @@ static void printMatrix(glm::mat4 matrix) {
     }
 }
 
-QSize GLWidget::minimumSizeHint() const {
+QSize MapContent::minimumSizeHint() const {
 
 	return QSize(50, 50);
 }
 
-QSize GLWidget::sizeHint() const {
+QSize MapContent::sizeHint() const {
 
 	return QSize(600, 600);
 }
 
-void GLWidget::cleanup()
+void MapContent::cleanup()
 {
     makeCurrent();
     // Cleanup VBO
@@ -94,7 +94,7 @@ void GLWidget::cleanup()
     doneCurrent();
 }
 
-void GLWidget::initializeGL() {
+void MapContent::initializeGL() {
 
 	glewExperimental = GL_TRUE;
     glewInit();
@@ -114,7 +114,7 @@ void GLWidget::initializeGL() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 }
 
-void GLWidget::paintGL() {
+void MapContent::paintGL() {
 
 
     // Clear the screen
@@ -138,14 +138,14 @@ void GLWidget::paintGL() {
     glDisableVertexAttribArray(0);
 }
 
-void GLWidget::translate(float delta_x, float delta_y, float delta_z) {
+void MapContent::translate(float delta_x, float delta_y, float delta_z) {
 
 	cameraPosition += glm::vec3(delta_x, delta_y, delta_z);
 	updateMatrices();
     update();
 }
 
-void GLWidget::mousePositionChanged(int x, int y) {
+void MapContent::mousePositionChanged(int x, int y) {
 
 	if(prevPoint.x == -1) {
 		prevPoint.x = x;
@@ -162,18 +162,18 @@ void GLWidget::mousePositionChanged(int x, int y) {
 	update();
 }
 
-void GLWidget::mouseMoveEvent(QMouseEvent *e) {
+void MapContent::mouseMoveEvent(QMouseEvent *e) {
 	mousePositionChanged(e->x(), e->y());
 }
 
-void GLWidget::updateDirectionVectors() {
+void MapContent::updateDirectionVectors() {
 
 	calcFrontVector();
 	calcRightVector();
 	calcUpVector();
 }
 
-void GLWidget::calcFrontVector() {
+void MapContent::calcFrontVector() {
 
 	frontVector = glm::vec3(
 			cos(verticalAngle) * sin(horizontalAngle),
@@ -182,7 +182,7 @@ void GLWidget::calcFrontVector() {
 			);
 }
 
-void GLWidget::calcRightVector() {
+void MapContent::calcRightVector() {
 
 	 rightVector = glm::vec3(
 			 sin(horizontalAngle - 3.14f/2.0f),
@@ -191,12 +191,12 @@ void GLWidget::calcRightVector() {
 			 );
 }
 
-void GLWidget::calcUpVector() {
+void MapContent::calcUpVector() {
 
 	upVector = glm::cross( rightVector, frontVector);
 }
 
-void GLWidget::updateMatrices() {
+void MapContent::updateMatrices() {
 
 	updateDirectionVectors();
 	updateProjectionMatrix();
@@ -206,12 +206,12 @@ void GLWidget::updateMatrices() {
 	mvp = projectionMatrix * viewMatrix * modelMatrix;
 }
 
-void GLWidget::updateProjectionMatrix() {
+void MapContent::updateProjectionMatrix() {
 
 	 projectionMatrix = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 }
 
-void GLWidget::updateViewMatrix() {
+void MapContent::updateViewMatrix() {
 
 	 viewMatrix = glm::lookAt(cameraPosition,
 			 	 	 	 	 cameraPosition + frontVector,
@@ -219,7 +219,7 @@ void GLWidget::updateViewMatrix() {
 							 );
 }
 
-void GLWidget::updateModelMatrix() {
+void MapContent::updateModelMatrix() {
 
 	 modelMatrix = glm::mat4(1.0f);
 }
