@@ -23,6 +23,7 @@
 #include <QMessageBox>
 #include <QDesktopWidget>
 #include <QSurfaceFormat>
+#include <QFileDialog>
 
 #include <iostream>
 #include <fstream>
@@ -72,8 +73,12 @@ void MainWindow::setContents(){
 
     this->mapView = new QAction(tr("&view map"), this);
     connect(this->mapView, SIGNAL(triggered()), this, SLOT(openMapView()));
+	this->checkPoints = new QAction(tr("&load checkpoints"), this);
+	connect(this->checkPoints, SIGNAL(triggered()), this,
+			SLOT(loadCheckPoints()));
     this->menuMap = this->menuBar()->addMenu(tr("&Map"));
     this->menuMap->addAction(this->mapView);
+	this->menuMap->addAction(checkPoints);
 
     this->contents=new QWidget(this);
     this->contents->setMinimumSize(200,200);
@@ -161,6 +166,21 @@ void MainWindow::openMapView() {
 	Mapper::getInstance()->viewMap();
 }
 
+void MainWindow::loadCheckPoints() {
+
+	QString filename = QFileDialog::getOpenFileName(this,
+			tr("select checkponint file"),
+			"/home/vvirkkal/Documents/rover-controller/", tr("*.dat"));
+
+	if (!filename.isNull()) {
+		bool success = Mapper::getInstance()->readCheckPoints(
+				filename.toStdString());
+		if (!success) {
+			cout << "unable to read any data from the given file\n";
+		}
+	}
+}
+
 void MainWindow::closeTcpConnection() {
 
 	this->connected = false;
@@ -178,6 +198,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 	if(this->gstVideoWidget) {
 		this->gstVideoWidget->close();
 	}
+	Mapper::getInstance()->closeMapView();
 	gst_deinit();
 	event->accept();
 }

@@ -32,6 +32,8 @@ public:
 
 	void translate(float delta_x, float delta_y, float delta_z);
 	void mousePositionChanged(int x, int y);
+	void mouseWheelChanged(int delta);
+	void setCheckPoints(std::vector<std::vector<float>>);
 
 public slots:
 	void cleanup();
@@ -39,6 +41,7 @@ protected:
 	void initializeGL() override;
 	void paintGL() override;
 	void mouseMoveEvent(QMouseEvent *event) override;
+	void wheelEvent(QWheelEvent *event) override;
 
 private:
 
@@ -50,16 +53,17 @@ private:
 	void calcFrontVector();
 	void calcRightVector();
 	void calcUpVector();
-	GLuint VertexArrayID, vertexbuffer, programID, matrixID;
+	GLuint vertexArrayID, vertexbuffer, checkPointBuffer, programID, matrixID,
+			colorID, pointSizeID;
 	int len_buffer = 39;
 	GLfloat g_vertex_buffer_data[39];
+	GLfloat *checkPoints;
+	int nCheckPoints;
 
 	glm::mat4 mvp, modelMatrix, viewMatrix, projectionMatrix;
 	glm::vec3 upVector, rightVector, frontVector, cameraPosition;
 
 	float horizontalAngle, verticalAngle, mouseSpeed;
-
-	Point prevPoint;
 };
 
 #endif

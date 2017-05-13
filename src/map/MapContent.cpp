@@ -1,18 +1,26 @@
+#include <math.h>
+#include <iostream>
+
+
 #include <GL/glew.h>
 #include <QMouseEvent>
 #include <QOpenGLShaderProgram>
 #include <QCoreApplication>
-#include <math.h>
-#include <MapContent.h>
-#include <iostream>
+
+#include "MapContent.h"
+#include "ArrayUtils.h"
 #include "shader.hpp"
 
 #define GLM_FORCE_RADIANS
+
+using namespace std;
 using namespace glm;
+using namespace utils;
 
 MapContent::MapContent(QWidget *parent)
     : QOpenGLWidget(parent), horizontalAngle(3.14f), verticalAngle(0.0f),
-	  mouseSpeed(0.005f), cameraPosition(5,2,10), prevPoint(-1, -1) {
+	  mouseSpeed(
+				0.005f), cameraPosition(5, 2, 10), nCheckPoints(0) {
 
 	setMouseTracking(true);
 }
@@ -81,7 +89,7 @@ QSize MapContent::minimumSizeHint() const {
 
 QSize MapContent::sizeHint() const {
 
-	return QSize(600, 600);
+	return QSize(800, 800);
 }
 
 void MapContent::cleanup()
@@ -89,8 +97,12 @@ void MapContent::cleanup()
     makeCurrent();
     // Cleanup VBO
 	glDeleteBuffers(1, &vertexbuffer);
-	glDeleteVertexArrays(1, &VertexArrayID);
+	glDeleteVertexArrays(1, &vertexArrayID);
 	glDeleteProgram(programID);
+	if (nCheckPoints > 0) {
+		glDeleteBuffers(1, &checkPointBuffer);
+		delete checkPoints;
+	}
     doneCurrent();
 }
 
@@ -99,11 +111,14 @@ void MapContent::initializeGL() {
 	glewExperimental = GL_TRUE;
     glewInit();
 	glClearColor(0.0f, 0.0f, 0.1f, 0.0f);
-    glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
+	glEnable(GL_PROGRAM_POINT_SIZE);
+    glGenVertexArrays(1, &vertexArrayID);
+	glBindVertexArray(vertexArrayID);
 
     programID = LoadShaders( "/home/vvirkkal/Documents/development/rover-controller/src/map/SimpleVertexShader.vertexshader", "/home/vvirkkal/Documents/development/rover-controller/src/map/SimpleFragmentShader.fragmentshader" );
     matrixID = glGetUniformLocation(programID, "MVP");
+	colorID = glGetUniformLocation(programID, "currentColor");
+	pointSizeID = glGetUniformLocation(programID, "pointSize");
 
     updateMatrices();
 
@@ -122,19 +137,25 @@ void MapContent::paintGL() {
     // Use our shader
     glUseProgram(programID);
     glUniformMatrix4fv(matrixID, 1, GL_FALSE, &mvp[0][0]);
+	glUniform4f(colorID, 0.0f, 1.0f, 0.0f, 1.0f);
 
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glVertexAttribPointer(
-    0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-    3,                  // size
-    GL_FLOAT,           // type
-    GL_FALSE,           // normalized?
-    0,                  // stride
-    (void*)0            // array buffer offset7
-    );
-    // Draw the triangle !
-    glDrawArrays(GL_LINE_STRIP, 0, len_buffer/3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+
+
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*) 0);
+	glDrawArrays(GL_LINE_STRIP, 0, len_buffer / 3);
+
+
+	if (nCheckPoints > 0) {
+		glUniform4f(colorID, 1.0f, 0.0f, 0.0f, 1.0f);
+		glUniform1ui(pointSizeID, 20);
+		glBindBuffer(GL_ARRAY_BUFFER, checkPointBuffer);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*) 0);
+		glDrawArrays(GL_POINTS, 0, nCheckPoints / 3);
+	}
     glDisableVertexAttribArray(0);
 }
 
@@ -147,23 +168,30 @@ void MapContent::translate(float delta_x, float delta_y, float delta_z) {
 
 void MapContent::mousePositionChanged(int x, int y) {
 
-	if(prevPoint.x == -1) {
-		prevPoint.x = x;
-		prevPoint.y = y;
-		return;
-	}
-
-	horizontalAngle += mouseSpeed * float(prevPoint.x - x);
-	verticalAngle   += mouseSpeed * float(prevPoint.y - y );
-
-	prevPoint.x = x;
-	prevPoint.y = y;
+	horizontalAngle = 3.0f / 2.0f * 3.14f - float(x) / float(width()) * 3.14f;
+	verticalAngle = 3.14f / 2.0f - float(y) / float(height()) * 3.14f;
 	updateMatrices();
 	update();
 }
 
 void MapContent::mouseMoveEvent(QMouseEvent *e) {
 	mousePositionChanged(e->x(), e->y());
+}
+
+void MapContent::mouseWheelChanged(int delta) {
+
+	float sign = delta < 0 ? -1.0f : 1.0f;
+	float deltaX = sign * frontVector[0] / float(sqrt(3));
+	float deltaY = sign * frontVector[1] / float(sqrt(3));
+	float deltaZ = sign * frontVector[2] / float(sqrt(3));
+
+	translate(deltaX, deltaY, deltaZ);
+
+}
+void MapContent::wheelEvent(QWheelEvent *e) {
+	int delta = e->delta();
+	mouseWheelChanged(delta);
+
 }
 
 void MapContent::updateDirectionVectors() {
@@ -223,4 +251,26 @@ void MapContent::updateModelMatrix() {
 
 	 modelMatrix = glm::mat4(1.0f);
 }
+
+void MapContent::setCheckPoints(vector<vector<float>> cPoints) {
+
+	if (cPoints.size() > 0) {
+		nCheckPoints = cPoints.at(0).size() * cPoints.size();
+		if (nCheckPoints == 0) {
+			return;
+		}
+
+
+		checkPoints = new GLfloat[nCheckPoints];
+		utils::convert_vector_array_to_array<float>(checkPoints, cPoints);
+
+		glGenBuffers(1, &checkPointBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, checkPointBuffer);
+		glBufferData(GL_ARRAY_BUFFER, 4 * nCheckPoints, checkPoints,
+				GL_STATIC_DRAW);
+		update();
+	}
+}
+
+
 

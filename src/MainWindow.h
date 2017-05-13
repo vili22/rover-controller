@@ -57,6 +57,7 @@ private slots:
 
 	void openConfigurationDialog();
 	void openMapView();
+	void loadCheckPoints();
 
 private:
 
@@ -66,7 +67,8 @@ private:
 	QWidget *contents;
 	QMenuBar *menubar;
 	QMenu *menuSystem, *menuRover, *menuSettings, *menuMap;
-	QAction *connectRover, *startStream, *exit, *openConfiguration, *mapView;
+	QAction *connectRover, *startStream, *exit, *openConfiguration, *mapView,
+			*checkPoints;
 	QListWidget *messageWindow;
 
 	std::shared_ptr<networking::TcpSocket> socket;

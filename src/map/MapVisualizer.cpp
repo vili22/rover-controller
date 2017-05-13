@@ -14,11 +14,11 @@ using namespace std;
 MapVisualizer::MapVisualizer(function<void()> f) :
 		closeAction(f) {
     setAttribute(Qt::WA_DeleteOnClose);
-    glWidget = new MapContent;
+    mapContent = new MapContent;
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     QHBoxLayout *container = new QHBoxLayout;
-    container->addWidget(glWidget);
+    container->addWidget(mapContent);
 
     QWidget *w = new QWidget;
     w->setLayout(container);
@@ -33,13 +33,13 @@ void MapVisualizer::keyPressEvent(QKeyEvent *e) {
     if (e->key() == Qt::Key_Escape) {
         close();
     } else if (e->key() == Qt::Key_Up) {
-        glWidget->translate(0.0f, -1.0f, 0.0f);
+        mapContent->translate(0.0f, -1.0f, 0.0f);
     } else if (e->key() == Qt::Key_Right) {
-        glWidget->translate(-1.0f, 0.0f, 0.0f);
+        mapContent->translate(-1.0f, 0.0f, 0.0f);
     } else if (e->key() == Qt::Key_Down) {
-        glWidget->translate(0.0f, 1.0f, 0.0f);
+        mapContent->translate(0.0f, 1.0f, 0.0f);
     } else if (e->key() == Qt::Key_Left) {
-        glWidget->translate(1.0f, 0.0f, 0.0f);
+        mapContent->translate(1.0f, 0.0f, 0.0f);
     } else {
         QWidget::keyPressEvent(e);
     }
@@ -48,4 +48,8 @@ void MapVisualizer::keyPressEvent(QKeyEvent *e) {
 void MapVisualizer::closeEvent(QCloseEvent *event) {
 	closeAction();
 	event->accept();
+}
+
+void MapVisualizer::setCheckpoints(vector<vector<float>> checkPoints) {
+	mapContent->setCheckPoints(checkPoints);
 }

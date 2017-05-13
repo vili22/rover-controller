@@ -1,8 +1,10 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <functional>
 #include <QWidget>
+
+#include <vector>
+#include <functional>
 
 class QSlider;
 class QPushButton;
@@ -15,16 +17,16 @@ class MapVisualizer : public QWidget
 
 public:
 	MapVisualizer(std::function<void()> f);
+	void setCheckpoints(std::vector<std::vector<float>> checkPoints);
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
 	void closeEvent(QCloseEvent *event);
 
-
 private:
 
 	std::function<void()> closeAction;
-    MapContent *glWidget;
+	MapContent *mapContent;
 };
 
 #endif

@@ -22,10 +22,12 @@ TEST(WheelEncoderTest, wheelEncoder) {
 
 
     Configuration::initializeConfiguration();
-	std::string filename = "/home/vvirkkal/Documents/development/rover-controller/sensor-data/data_suora1.txt";
-	std::vector<std::vector<double>> doubleArray = utils::parse_sensor_data(filename);
-	std::sort(doubleArray.begin(), doubleArray.end(), [](const std::vector<double> &a,
-                                                       const std::vector<double> &b){ return a[1] < b[1];});
+	string filename =
+			"/home/vvirkkal/Documents/development/rover-controller/sensor-data/data_suora1.txt";
+	vector<vector<double>> doubleArray = utils::read_float_type_array<double>(
+			filename);
+	sort(doubleArray.begin(), doubleArray.end(), [](const vector<double> &a,
+			const vector<double> &b) {return a[1] < b[1];});
 
 	testing::internal::CaptureStdout();
     for(std::vector<std::vector<double>>::iterator it = doubleArray.begin(); it < doubleArray.end(); it++) {
