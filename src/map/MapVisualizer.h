@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include <glm/glm.hpp>
+
 #include <vector>
 #include <functional>
 
@@ -25,8 +27,9 @@ protected:
 
 private:
 
-	std::function<void()> closeAction;
 	MapContent *mapContent;
+	std::function<void()> closeAction;
+	glm::vec3 prevPosition;
 };
 
 #endif

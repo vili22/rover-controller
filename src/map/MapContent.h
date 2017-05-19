@@ -1,6 +1,8 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
+#include <vector>
+
 #include <QOpenGLWidget>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
@@ -20,6 +22,8 @@ public:
 	int x, y;
 };
 
+class Sphere;
+
 class MapContent: public QOpenGLWidget {
 Q_OBJECT
 
@@ -34,6 +38,7 @@ public:
 	void mousePositionChanged(int x, int y);
 	void mouseWheelChanged(int delta);
 	void setCheckPoints(std::vector<std::vector<float>>);
+	void newPathPoint(float x, float y, float z);
 
 public slots:
 	void cleanup();
@@ -53,17 +58,42 @@ private:
 	void calcFrontVector();
 	void calcRightVector();
 	void calcUpVector();
-	GLuint vertexArrayID, vertexbuffer, checkPointBuffer, programID, matrixID,
-			colorID, pointSizeID;
-	int len_buffer = 39;
-	GLfloat g_vertex_buffer_data[39];
-	GLfloat *checkPoints;
-	int nCheckPoints;
+	GLuint vertexArrayID, pathPointBuffer, programID, matrixID, colorID,
+			pointSizeID;
+	int nPathPoints, nMaxPathPoints;
+
+	std::vector<Sphere> checkPoints;
 
 	glm::mat4 mvp, modelMatrix, viewMatrix, projectionMatrix;
 	glm::vec3 upVector, rightVector, frontVector, cameraPosition;
 
-	float horizontalAngle, verticalAngle, mouseSpeed;
+	float horizontalAngle, verticalAngle;
+};
+
+class Sphere {
+
+public:
+	Sphere(float *x0, float r, int N_phi, int N_theta);
+	~Sphere();
+	std::vector<glm::vec3> getVertices();
+	std::vector<unsigned int> getIndices();
+	int getNumIndices();
+	GLuint* getVertexBufferReference();
+	GLuint getVertexBuffer();
+	GLfloat* getVertexArrayReference();
+	GLuint* getIndexBufferReference();
+	GLuint getIndexBuffer();
+	unsigned int* getIndexArrayReference();
+	int getNumVertexCoordinates();
+
+private:
+
+	void createVertices(float *x0, float r, int N_phi, int N_theta);
+	void createIndices(int N_phi, int N_theta);
+	std::vector<glm::vec3> vertices;
+	std::vector<unsigned int> indices;
+
+	GLuint vertexBuffer, indexBuffer;
 };
 
 #endif
