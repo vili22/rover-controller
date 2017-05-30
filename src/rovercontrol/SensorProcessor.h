@@ -20,6 +20,7 @@
 
 class SensorProcessor {
 
+
 	public:
 
 		SensorProcessor();

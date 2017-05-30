@@ -14,6 +14,19 @@
 namespace utils {
 
 	std::vector<std::string> strSplit(std::string line);
+
+template<class FloatType> std::vector<FloatType> convert_to_float_type(
+		std::vector<std::string> values) {
+
+	std::vector<FloatType> floatValues;
+	for (std::string &s : values) {
+
+		floatValues.push_back(std::stod(s));
+	}
+
+	return floatValues;
+}
+
 }
 
 

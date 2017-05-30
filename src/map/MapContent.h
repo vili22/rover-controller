@@ -10,7 +10,7 @@
 #include <glm/glm.hpp>
 #include "glm/gtc/matrix_transform.hpp"
 
-QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
+//QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
 class Point {
 
@@ -38,10 +38,12 @@ public:
 	void mousePositionChanged(int x, int y);
 	void mouseWheelChanged(int delta);
 	void setCheckPoints(std::vector<std::vector<float>>);
+	void setPathPoints(std::vector<glm::vec3> points);
 	void newPathPoint(float x, float y, float z);
 
 public slots:
 	void cleanup();
+	void periodicDraw();
 protected:
 	void initializeGL() override;
 	void paintGL() override;
@@ -58,14 +60,17 @@ private:
 	void calcFrontVector();
 	void calcRightVector();
 	void calcUpVector();
+	static void setNearestCheckPoint(std::vector<Sphere> &checkPoints,
+			glm::vec3 currentPoint);
 	GLuint vertexArrayID, pathPointBuffer, programID, matrixID, colorID,
 			pointSizeID;
-	int nPathPoints, nMaxPathPoints;
+	int nPathPoints, nMaxPathPoints, millisSinceStart, updateInterval;
 
 	std::vector<Sphere> checkPoints;
 
 	glm::mat4 mvp, modelMatrix, viewMatrix, projectionMatrix;
-	glm::vec3 upVector, rightVector, frontVector, cameraPosition;
+	glm::vec3 upVector, rightVector, frontVector, cameraPosition,
+			currentPosition;
 
 	float horizontalAngle, verticalAngle;
 };
@@ -85,6 +90,10 @@ public:
 	GLuint getIndexBuffer();
 	unsigned int* getIndexArrayReference();
 	int getNumVertexCoordinates();
+	void setCheckpoint(bool checkPoint);
+	float distToPointSquared(glm::vec3 point) const;
+	bool isCheckPoint();
+	float center[3];
 
 private:
 
@@ -94,6 +103,7 @@ private:
 	std::vector<unsigned int> indices;
 
 	GLuint vertexBuffer, indexBuffer;
+	bool checkPoint = false;
 };
 
 #endif

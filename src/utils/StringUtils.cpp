@@ -9,12 +9,13 @@
 
 #include "StringUtils.h"
 
+using namespace std;
 
-std::vector<std::string> utils::strSplit(std::string line) {
+vector<string> utils::strSplit(string line) {
 
-	std::vector<std::string> splitString;
-	std::stringstream instream(line);
-	std::string tempString;
+	vector<string> splitString;
+	stringstream instream(line);
+	string tempString;
 
 
 	while(instream.good()) {

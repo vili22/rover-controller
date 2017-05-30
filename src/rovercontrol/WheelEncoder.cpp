@@ -75,6 +75,7 @@ void WheelEncoder::update(std::vector<double> reading) {
 std::vector<double> WheelEncoder::getRoverPositionState() {
 
     std::vector<double> state;
+	state.push_back(t);
     state.push_back(x);
     state.push_back(y);
     state.push_back(theta);

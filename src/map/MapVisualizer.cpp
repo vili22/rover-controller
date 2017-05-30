@@ -9,7 +9,13 @@
 
 #include <iostream>
 
+#include "Configuration.h"
+#include "FileUtils.h"
+#include "SensorProcessor.h"
+#include "Mapper.h"
+
 using namespace std;
+using namespace configuration;
 
 MapVisualizer::MapVisualizer(function<void()> f) :
 		closeAction(f), prevPosition(0, 0, 0) {
@@ -26,7 +32,6 @@ MapVisualizer::MapVisualizer(function<void()> f) :
     setLayout(mainLayout);
 
 	setWindowTitle(tr("Map"));
-	//mapContent->newPathPoint(prevPosition[0], prevPosition[1], prevPosition[2]);
 }
 
 
@@ -57,6 +62,8 @@ void MapVisualizer::keyPressEvent(QKeyEvent *e) {
 		prevPosition += glm::vec3(-1, 0, 0);
 		mapContent->newPathPoint(prevPosition[0], prevPosition[1],
 				prevPosition[2]);
+	} else if (e->key() == Qt::Key_H) {
+		runSimulation();
 	} else {
         QWidget::keyPressEvent(e);
     }
@@ -70,3 +77,42 @@ void MapVisualizer::closeEvent(QCloseEvent *event) {
 void MapVisualizer::setCheckpoints(vector<vector<float>> checkPoints) {
 	mapContent->setCheckPoints(checkPoints);
 }
+
+void MapVisualizer::setPathPoints(vector<glm::vec3> points) {
+	mapContent->setPathPoints(points);
+}
+
+void MapVisualizer::addVisualizedPoint(glm::vec3 newPoint) {
+
+	prevPosition = newPoint;
+	mapContent->newPathPoint(prevPosition[0], prevPosition[1], prevPosition[2]);
+}
+
+void MapVisualizer::runSimulation() {
+
+	cout << "running simulation  <<<\n";
+	Configuration::initializeConfiguration();
+	string filename =
+			"/home/vvirkkal/Documents/development/rover-controller/sensor-data/data_kaannos1.txt";
+	vector<vector<double>> doubleArray = utils::read_float_type_array<double>(
+			filename);
+	sort(doubleArray.begin(), doubleArray.end(), [](const vector<double> &a,
+			const vector<double> &b) {return a[1] < b[1];});
+
+	for (vector<vector<double>>::iterator it = doubleArray.begin();
+			it < doubleArray.end(); it++) {
+		SensorProcessor::getInstance()->newSensorReading(*it);
+		vector<double> state = SensorProcessor::getInstance()->getState();
+		Mapper::getInstance()->addPathPoint(float(state[0]), float(state[1]),
+				float(state[2]), 0.0f);
+		for (size_t ind = 0; ind < state.size(); ind++) {
+			if (ind == 3) {
+				cout << state[ind] * 180 / M_PI << " ";
+			} else {
+				cout << state[ind] << " ";
+			}
+		}
+		cout << "\n";
+	}
+}
+

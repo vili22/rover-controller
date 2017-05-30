@@ -5,10 +5,11 @@
  *      Author: vvirkkal
  */
 #include <iostream>
-#include "StringUtils.h"
 
 #include "SensorProcessor.h"
 #include "Configuration.h"
+#include "Mapper.h"
+#include "StringUtils.h"
 
 using namespace std;
 using namespace configuration;
@@ -56,36 +57,16 @@ void SensorProcessor::newSensorReading(string sensorReading) {
 		return;
 	}
 
-	cout << sensorReading << "\n";
+	vector<double> reading = utils::convert_to_float_type<double>(
+			utils::strSplit(sensorReading));
+	newSensorReading(reading);
+	std::vector<double> state = getState();
+	Mapper::getInstance()->addPathPoint((float) state[0], (float) state[1],
+			(float) state[2], 0.0f);
 
-
-
-//	std::vector<std::string> input = utils::strSplit(sensorReading);
-//
-//	int sensor = std::stoi(input.at(0));
-//
-//	switch (sensor) {
-//
-//	case 0 :
-//		accUpdate(input);
-//		break;
-//	case 1 :
-//		gyroUpdate(input);
-//		break;
-//	default :
-//		std::cout << "Unsupported sensor type\n";
-//	}
 }
 
-std::vector<double> SensorProcessor::getState() {
-    return wheelEncoder.getRoverPositionState();
-}
-
-vector<int> SensorProcessor::getTicks() {
-    return wheelEncoder.getTotalTicks();
-}
-
-void SensorProcessor::newSensorReading(std::vector<double> reading) {
+void SensorProcessor::newSensorReading(vector<double> reading) {
 
     if(reading.size() <= 0) {
         return;
@@ -96,14 +77,21 @@ void SensorProcessor::newSensorReading(std::vector<double> reading) {
     switch(type) {
     case 0 :
         if(wheelEncoder.checkInputValidity(reading)) {
-            this->wheelEncoder.update(reading);
+			wheelEncoder.update(reading);
         }
     }
-
-
 }
 
-void SensorProcessor::accUpdate(std::vector<std::string> input) {
+vector<double> SensorProcessor::getState() {
+	return wheelEncoder.getRoverPositionState();
+}
+
+vector<int> SensorProcessor::getTicks() {
+	return wheelEncoder.getTotalTicks();
+}
+
+
+void SensorProcessor::accUpdate(vector<string> input) {
 
 	if(!this->systemInitalized) {
 		double gravity[] = {0.0, 0.0, 1.0};
