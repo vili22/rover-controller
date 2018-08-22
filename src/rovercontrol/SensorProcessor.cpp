@@ -54,6 +54,7 @@ void SensorProcessor::newSensorReading(string sensorReading) {
 
 	if(writeToFile && sensorFile.is_open()) {
 		sensorFile << sensorReading << "\n";
+		std::cout << sensorReading << "\n";
 		return;
 	}
 

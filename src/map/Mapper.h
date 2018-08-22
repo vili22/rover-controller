@@ -6,12 +6,14 @@
 #include <string>
 #include <vector>
 
+#include <QMetaType>
 #include <QObject>
 
 class MapVisualizer;
 
 class Mapper: public QObject {
 Q_OBJECT
+
 public:
 	Mapper();
 	void viewMap();

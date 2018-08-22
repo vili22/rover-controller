@@ -13,7 +13,7 @@ shared_ptr<Mapper> Mapper::mapper = nullptr;
 Mapper::Mapper() :
 		mapVisualizer(nullptr),
 		mapViewOpen(false), checkpointsAdded(false) {
-
+	qRegisterMetaType<glm::vec3>("glm::vec3");
 }
 
 shared_ptr<Mapper> Mapper::getInstance() {
