@@ -22,7 +22,7 @@ through package-manager the provided FindGStreamer.cmake
 should find it. If installed in otherway modify the 
 FindGStreamer.cmake file.
 
--qt5:
+- qt5:
 sudo apt-get install qt5-default
 
 - gstreamer-libraries: 
@@ -32,10 +32,10 @@ sudo apt-get install libfontconfig1-dev libfreetype6-dev libpng-dev
 sudo apt-get install libcairo2-dev libjpeg-dev libgif-dev
 sudo apt-get install libgstreamer-plugins-base1.0-dev
 
--opengl:
+- opengl:
 sudo apt-get install libglm-dev
 
--eigen:
+- eigen:
 download sources and make symlink
 sudo ln -s /usr/local/include/ /home/vvirkkal/Libraries/eigen-eigen-323c052e1731
 
