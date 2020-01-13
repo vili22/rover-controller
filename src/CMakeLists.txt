@@ -1,9 +1,8 @@
 PROJECT(rover-controller-system)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.11)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 
-SET(QT_QMAKE_EXECUTABLE /home/vvirkkal/Documents/libraries/Qt_56/5.6/gcc_64/bin)
 FIND_PACKAGE(Qt5Gui REQUIRED)
 FIND_PACKAGE(Qt5Core REQUIRED)
 FIND_PACKAGE(Qt5Widgets REQUIRED)
@@ -36,9 +35,9 @@ ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/configuration)
 ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/map)
 
 
-ADD_SUBDIRECTORY("/home/vvirkkal/Documents/libraries/googletest/googletest" "${PROJECT_BINARY_DIR}/gtest")
-ENABLE_TESTING()
-ADD_SUBDIRECTORY("${PROJECT_SOURCE_DIR}/test")
+#ADD_SUBDIRECTORY("/home/vvirkkal/Documents/libraries/googletest/googletest" "${PROJECT_BINARY_DIR}/gtest")
+#ENABLE_TESTING()
+#ADD_SUBDIRECTORY("${PROJECT_SOURCE_DIR}/test")
 
 ADD_EXECUTABLE(rover-controller ${SOURCE})
 SET_TARGET_PROPERTIES(rover-controller PROPERTIES COMPILE_FLAGS "-std=c++11 -O2 -fno-inline-functions -Wall -Wextra -Wno-unused-parameter -fPIE")

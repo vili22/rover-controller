@@ -104,7 +104,7 @@ void SensorProcessor::accUpdate(vector<string> input) {
 
 void SensorProcessor::gyroUpdate(std::vector<std::string> input) {
 
-	if(~this->systemInitalized) {
+	if(!this->systemInitalized) {
 		return;
 	}
 

@@ -7,3 +7,5 @@ RemoteSystemsTempFiles
 articles
 sensor-data
 matlab
+src/.idea
+src/cmake-build-debug
